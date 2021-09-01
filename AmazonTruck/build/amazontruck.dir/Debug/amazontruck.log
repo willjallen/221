@@ -1,0 +1,3 @@
+﻿  Driver.cpp
+C:\Users\WilliamAllen\Desktop\School\Fall2021School\221\src\Driver.cpp(23): warning C4305: 'argument': truncation from 'double' to 'float'
+  amazontruck.vcxproj -> C:\Users\WilliamAllen\Desktop\School\Fall2021School\221\build\Debug\amazontruck.exe

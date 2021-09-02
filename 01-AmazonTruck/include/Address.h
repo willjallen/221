@@ -71,7 +71,7 @@ inline const Address & Address::operator = (const Address &source)
 }
 
 inline ostream& operator<< (ostream& os, const Address& address){
-	os << "Address1":  << address.getAddress1() << endl;
+	os << "Address1: "  << address.getAddress1() << endl;
 	os << "City: " << address.getCity() << endl;
 	os << "State: " << address.getState() << endl;
 	os << "Zip: " << address.getZip() << endl;

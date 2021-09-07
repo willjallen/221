@@ -8,7 +8,7 @@
 
 
 bool AmazonTruck::isFull(){
-	return totalVolumnSoFar() > volumn;
+	return totalVolumnSoFar() >= volumn;
 }
 
 
@@ -35,7 +35,7 @@ void AmazonTruck::fillFromFile(string filename){
 
  	if (infile.fail())
 	{
-		cout << "The File was not successfully open." << endl;
+		cout << "The file was not successfully opened." << endl;
 		exit(1); 
 	}
 
@@ -68,8 +68,10 @@ void AmazonTruck::fillFromFile(string filename){
 		std::stringstream linestream(line);
     	std::string cell;
 
+    	bool invalidPackage = false;
 
-    	while(getline(linestream, cell, ',')){
+
+    	while(getline(linestream, cell, ',')) {
 
     		/*
     		"And packages with negatives in either width, height, or depth, 
@@ -91,17 +93,28 @@ void AmazonTruck::fillFromFile(string filename){
     				break;
     			case(4):
     				width = ((unsigned short)stoi(cell));
-    				// Check for negative values
+
+    				if(width < 0){
+    					invalidPackage = true;
+    				}
 
     				break;
     			case(5):
     				height = ((unsigned short)stoi(cell));
-    				// Check for negative values
+
+    				if(height < 0){
+    					invalidPackage = true;
+    				}
+
 
     				break;
 				case(6):
     				depth = ((unsigned short)stoi(cell));
-    				// Check for negative values
+
+    				if(depth < 0){
+    					invalidPackage = true;
+    				}
+
 
     				break;
     			case(7):
@@ -116,9 +129,7 @@ void AmazonTruck::fillFromFile(string filename){
     			case(10):
     				flammable = stoi(cell);
     				break;
-    		}
-
-    		// Create the package		
+    		}	
 
     		if(colIndex >= ITEMS_IN_ROW){
     			// Error, more data types than truck can hold
@@ -128,9 +139,25 @@ void AmazonTruck::fillFromFile(string filename){
 
     	}
 
-    	colIndex = 0;
+    	unsigned short volume = width * height * depth
+    	Dimension dimension(width, height, depth);
 
     	// Check if there is space in the truck for more packages
+    	bool noSpace = false;
+    	if(totalVolumnSoFar() + volume > volmn){
+    		noSpace = true;
+    	}
+		
+		// Create the package
+		if(!invalidPackage && !noSpace){
+			Address address(address1, city, state, zip);
+			Package package(address, dimension, ID, weight);
+			package.setVolume(volume);
+
+		}	
+
+    	colIndex = 0;
+
 
 
 	}

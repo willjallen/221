@@ -3,6 +3,7 @@ project(amazontruck)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # static library headers
 include_directories(include)

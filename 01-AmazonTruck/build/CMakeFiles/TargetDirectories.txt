@@ -1,3 +1,1 @@
-C:/Users/WilliamAllen/Desktop/School/Fall2021School/221/01-AmazonTruck/build/CMakeFiles/edit_cache.dir
-C:/Users/WilliamAllen/Desktop/School/Fall2021School/221/01-AmazonTruck/build/CMakeFiles/amazontruck.dir
-C:/Users/WilliamAllen/Desktop/School/Fall2021School/221/01-AmazonTruck/build/CMakeFiles/rebuild_cache.dir
+/home/ugrads/w/willallen/221/01-AmazonTruck/build/CMakeFiles/amazontruck.dir

@@ -21,11 +21,22 @@ int main()
 	Address testAddress("1600 Penn. Ave.", "DC", "DC", 00125);
 	Dimension testDimension(12, 6, 12);
 	Liquid testLiquid(testAddress, testDimension, "HJGASDHG12765T", 12.3, "cleaner", true);
+	testLiquid.setVolume(12 * 6 * 12);
+
+	cout << "Test address cout overload: " << endl;
+	cout << testAddress << endl;
+
+	cout << "Test dimension cout overload: " << endl;
+	cout << testDimension << endl;
+	
+	cout << "Test liquid cout overload: " << endl;
+	cout << testLiquid << endl;
+	
 
 	AmazonTruck* fromCollegeStation = new AmazonTruck( (short int) 1664);
 	fromCollegeStation->fillFromFile("../datafile.csv");
 
-
+	cout << "Last item: " << endl;
 	fromCollegeStation->displayLastItenInTruck();
 
 	// cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!

@@ -18,7 +18,7 @@
 // The volume overflow is simply melting into the fourth dimension
 // Leave it to Jeff Bezos to reivent physics so he can ship more packages 
 bool AmazonTruck::isFull(){
-	if(volumn - totalVolumnSoFar() < 0){
+	if(volumn - totalVolumnSoFar() <= 0){
     		return true;
     	}
     return false;

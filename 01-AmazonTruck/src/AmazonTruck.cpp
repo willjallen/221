@@ -139,12 +139,12 @@ void AmazonTruck::fillFromFile(string filename){
 
     	}
 
-    	unsigned short volume = width * height * depth
+    	unsigned short volume = width * height * depth;
     	Dimension dimension(width, height, depth);
 
     	// Check if there is space in the truck for more packages
     	bool noSpace = false;
-    	if(totalVolumnSoFar() + volume > volmn){
+    	if(totalVolumnSoFar() + volume > this->volmn){
     		noSpace = true;
     	}
 		

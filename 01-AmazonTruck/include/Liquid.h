@@ -38,6 +38,19 @@ private:
 	bool flammable;
 };
 
+inline ostream& operator<< (ostream& os, const Liquid liquid){
+	os << "-------------------------------------" << endl;
+	os << "Address: " << endl;
+	os << liquid.getAddress() << endl;
+	os << "Dimension: " << endl;
+	os << liquid.getDimension() << endl;
+	os << "ID: " << liquid.getId() << endl;
+	os << "Weight: " << liquid.getWeight() << endl;
+	os << "Volume: " << liquid.getVolume() << endl;
+	os << "Liquid Type: " << liquid.getLiquidType() << endl;
+	os << "Flammable: " << liquid.isFlammable() << endl;
+	os << "-------------------------------------" << endl;
+}
 
 
 #endif /* LIQUID_H_ */

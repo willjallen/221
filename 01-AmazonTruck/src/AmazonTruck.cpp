@@ -5,10 +5,23 @@
 
 #include "AmazonTruck.h"
 #include "Package.h"
+#include "Liquid.h"
 
 
+/* 
+ If your truck isn't full, you should add the package, even if its volume
+ is more than the space left(This may or may not happen; it depends on the truck's volume). 
+ Basically, You keep adding packages (non-negative ones) until there is 
+ no (+ve) space left-- the truck is full. 
+*/
+
+// The volume overflow is simply melting into the fourth dimension
+// Leave it to Jeff Bezos to reivent physics so he can ship more packages 
 bool AmazonTruck::isFull(){
-	return totalVolumnSoFar() >= volumn;
+	if(volumn - totalVolumnSoFar() < 0){
+    		return true;
+    	}
+    return false;
 }
 
 
@@ -31,7 +44,7 @@ unsigned short AmazonTruck::totalVolumnSoFar(){
 
 void AmazonTruck::fillFromFile(string filename){
 	ifstream infile; 
-	infile.open("input.txt", ios_base::in); 
+	infile.open(filename, ios_base::in); 
 
  	if (infile.fail())
 	{
@@ -41,44 +54,44 @@ void AmazonTruck::fillFromFile(string filename){
 
 	cout << "Reading from the file" << endl; 
 
-	string address1;
-	string city;
-	string state;
-	int zip;
+	string address1 = "";
+	string city = "";
+	string state = "";
+	int zip = 0;
 
-	unsigned short int width;
-	unsigned short int height;
-	unsigned short int depth;
+	int width = 0;
+	int height = 0;
+	int depth = 0;
 
-	string ID;
-	float weight;
+	string ID = "";
+	float weight = 0.0;
 
-	string cargoType;
-	bool isLiquid;
-	string liquidType;
-	bool flammable;
+	string cargoType = "";
+	bool isLiquid = false;
+	string liquidType = "";
+	bool flammable = false;
 
 
-	string line;
+	string line = "";
 	const int ITEMS_IN_ROW = 11;
 	int colIndex = 0;
 
 	while(getline(infile, line)){
 
 		std::stringstream linestream(line);
-    	std::string cell;
+    	std::string cell = "";
 
     	bool invalidPackage = false;
 
 
     	while(getline(linestream, cell, ',')) {
 
+
     		/*
     		"And packages with negatives in either width, height, or depth, 
     		should be ignored and not placed in the truck."
     		*/
     		switch(colIndex){
-    			// address1
     			case(0): 
     				address1 = cell;
     				break;
@@ -92,7 +105,7 @@ void AmazonTruck::fillFromFile(string filename){
     				zip = stoi(cell);
     				break;
     			case(4):
-    				width = ((unsigned short)stoi(cell));
+    				width = stoi(cell);
 
     				if(width < 0){
     					invalidPackage = true;
@@ -100,7 +113,7 @@ void AmazonTruck::fillFromFile(string filename){
 
     				break;
     			case(5):
-    				height = ((unsigned short)stoi(cell));
+    				height = stoi(cell);
 
     				if(height < 0){
     					invalidPackage = true;
@@ -109,7 +122,7 @@ void AmazonTruck::fillFromFile(string filename){
 
     				break;
 				case(6):
-    				depth = ((unsigned short)stoi(cell));
+    				depth = stoi(cell);
 
     				if(depth < 0){
     					invalidPackage = true;
@@ -133,26 +146,34 @@ void AmazonTruck::fillFromFile(string filename){
 
     		if(colIndex >= ITEMS_IN_ROW){
     			// Error, more data types than truck can hold
+    			invalidPackage = true;
     		}else{
     			++colIndex;
     		}
 
     	}
 
-    	unsigned short volume = width * height * depth;
-    	Dimension dimension(width, height, depth);
-
-    	// Check if there is space in the truck for more packages
-    	bool noSpace = false;
-    	if(totalVolumnSoFar() + volume > volumn){
-    		noSpace = true;
-    	}
-		
 		// Create the package
-		if(!invalidPackage && !noSpace){
+		if(!invalidPackage && !isFull()){
+
+	    	unsigned short volume = width * height * depth;
+	    	Dimension dimension(width, height, depth);
 			Address address(address1, city, state, zip);
-			Package package(address, dimension, ID, weight);
-			package.setVolume(volume);
+
+			Package item;
+
+			// Check if liquid
+			if(cargoType.find("cargo") == string::npos){
+				Liquid liquid(address, dimension, ID, weight, cargoType, flammable);
+				item = liquid;			
+			}else{
+
+				Package package(address, dimension, ID, weight);
+				item = package;
+			}
+			
+			item.setVolume(volume);
+			truck->push_back(item);
 
 		}	
 
@@ -170,9 +191,14 @@ void AmazonTruck::fillFromFile(string filename){
 }
 
 void AmazonTruck::displayLastItenInTruck(){
+	cout << truck->back() << endl;
 }
 
 
 
 
-	
+void AmazonTruck::displayAllItemsInTruck(){
+	for(auto package = truck->begin(); package != truck->end(); ++package){
+		cout << (*package) << endl;
+	}
+}

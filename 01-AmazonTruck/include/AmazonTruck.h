@@ -29,7 +29,7 @@ public:
 	 */
 	void fillFromFile(string filename);
 	void displayLastItenInTruck();
-
+	void displayAllItemsInTruck();
 
 
 private:

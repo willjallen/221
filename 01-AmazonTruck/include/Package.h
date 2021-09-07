@@ -61,11 +61,15 @@ inline Package::Package(Address &a, Dimension &d, string id, float weight)
 }
 
 inline ostream& operator<< (ostream& os, const Package package){
-	os << "Address: " << package.getAddress() << endl;
-	os << "Dimension: " << package.getDimension() << endl;
+	os << "-------------------------------------" << endl;
+	os << "Address: " << endl;
+	os << package.getAddress() << endl;
+	os << "Dimension: " << endl;
+	os << package.getDimension() << endl;
 	os << "ID: " << package.getId() << endl;
 	os << "Weight: " << package.getWeight() << endl;
 	os << "Volume: " << package.getVolume() << endl;
+	os << "-------------------------------------" << endl;
 }
 
 #endif /* PACKAGE_H_ */

@@ -23,13 +23,17 @@ int main()
 	Liquid testLiquid(testAddress, testDimension, "HJGASDHG12765T", 12.3, "cleaner", true);
 
 	AmazonTruck* fromCollegeStation = new AmazonTruck( (short int) 1664);
-	//fromCollegeStation->fillFromFile("data.txt");
+	fromCollegeStation->fillFromFile("../datafile.csv");
 
 
 	fromCollegeStation->displayLastItenInTruck();
 
-	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
-	cout << testAddress << endl;
+	// cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+	// cout << testAddress << endl;
+
+	// fromCollegeStation->displayAllItemsInTruck();
+
+
 	int hold = 0;
 	cin >> hold;
 	return 0;

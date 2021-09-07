@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/amazontruck.dir/src/Driver.cpp.o CMakeFiles/amazontruck.dir/src/AmazonTruck.cpp.o  -o amazontruck -rdynamic 

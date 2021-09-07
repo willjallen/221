@@ -1,1 +1,0 @@
-/home/ugrads/w/willallen/221/01-AmazonTruck/build/CMakeFiles/amazontruck.dir

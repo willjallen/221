@@ -144,7 +144,7 @@ void AmazonTruck::fillFromFile(string filename){
 
     	// Check if there is space in the truck for more packages
     	bool noSpace = false;
-    	if(totalVolumnSoFar() + volume > this->volmn){
+    	if(totalVolumnSoFar() + volume > volumn){
     		noSpace = true;
     	}
 		

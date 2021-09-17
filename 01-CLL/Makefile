@@ -4,7 +4,7 @@
 
 
 all: driver.o bufferlist.o buffer.o
-	g++ -Wall -std=c++11 driver.o bufferlist.o buffer.o -o driver.out
+	g++ -Wall -std=c++11 driver.o bufferlist.o buffer.o -o driver.exe
 
 driver.o: src/driver.cpp
 	g++ -Wall -c src/driver.cpp
@@ -16,8 +16,17 @@ buffer.o: src/buffer.cpp
 	g++ -Wall -c src/buffer.cpp
 
 valgrind:
+	valgrind ./driver.exe
+
+run:
+	$$(driver.exe)
 
 clean:
+	rm -rf *.o*
+	rm -rf *~
+	rm -f *.out
+	rm -f *~*.h.gcg *#
+
 
 
 

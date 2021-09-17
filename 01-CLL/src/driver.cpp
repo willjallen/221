@@ -13,7 +13,10 @@
  **********************************************/
 
 
-#include "bufferlist.h"
+#include <stdexcept>
+#include "../include/bufferlist.h"
+#include "../include/buffer.h"
+
 class Tester{
     public:
     bool BufferEnqueueDequeue(Buffer &buffer, int dataCount);
@@ -84,6 +87,41 @@ int main(){
     return 0;
 }
 
+bool Tester::BufferEnqueueDequeue(Buffer &buffer, int dataCount){
+    for (int i=0;i<dataCount;i++) {
+        try{
+            buffer.enqueue(i);
+        }catch(const std::overflow_error &e){
+            return false;
+        }catch(const std::underflow_error &e){
+            return false;
+        }    
+    }
+
+    return true;
+}
+
+bool Tester::BufferCopyConstructor(const Buffer &buffer){
+    
+    bool pass = true;
+
+    Buffer newBuffer(buffer);
+
+    if(newBuffer.m_buffer == buffer.m_buffer) pass = false;
+    if(newBuffer.capacity() != buffer.capacity()) pass = false;
+
+    for(int i = 0; i < newBuffer.capacity(); ++i){
+        if(newBuffer.m_buffer[i] != buffer.m_buffer[i]){
+            pass = false;
+        }
+    }
+
+    return pass;
+
+}
+
+
+
 bool Tester::BufferEnqueueFull(int size){
     Buffer aBuffer(size);
     for (int i=0;i<size;i++)
@@ -102,4 +140,8 @@ bool Tester::BufferEnqueueFull(int size){
     }
     //no exception thrown, this case is not acceptable
     return false;
+}
+
+void Tester::BufListEnqueuePerformance(int numTrials, int N){
+    
 }

@@ -12,7 +12,7 @@
  ** 
  **********************************************/
 
-#include "bufferlist.h"
+#include "../include/bufferlist.h"
 BufferList::BufferList(int minBufCapacity){
     // **************************************
     // Implement the alternative constructor

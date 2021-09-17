@@ -10,8 +10,8 @@
  ** 
  **********************************************/
 
-#include "buffer.h"
 #include <stdexcept>
+#include "../include/buffer.h"
 
 
 
@@ -33,14 +33,14 @@ Buffer::Buffer(int capacity){
 
         m_buffer = new int[m_capacity];
         m_count = 0;
-        m_start = m_buffer;
-        m_end = m_buffer[m_capacity-1];
+        m_start = m_capacity-1;
+        m_end = 0;
 
     }else{
         m_buffer = nullptr;
         m_count = 0;
-        m_start = nullptr;
-        m_end = nullptr;
+        m_start = 0;
+        m_end = 0;
 
     }
 
@@ -53,34 +53,36 @@ void Buffer::clear(){
     // it will be handled by linked list,
     // because it is used by linked list
     // ***********************************
+    delete[] m_buffer;
+
+    m_buffer = nullptr;
+    m_count = 0;
+    m_start = 0;
+    m_end = 0;
+
 }
 
 Buffer::~Buffer(){
     clear();
 }
 
-int Buffer::count() const {return m_count;}
+int Buffer::count() {return m_count;}
 
 int Buffer::capacity() const {return m_capacity;}
 
-bool Buffer::full() const {
+bool Buffer::full() {
     // **************************
     // Implement full() function
     // **************************
     return m_count >= m_capacity;
 }
 
-bool Buffer::empty(){
+bool Buffer::empty() {
     // **************************
     // Implement empty() function
     // **************************
 
-    delete m_buffer[m_capacity];
-
-    m_buffer = nullptr;
-    m_count = 0;
-    m_start = nullptr;
-    m_end = nullptr;
+    return m_count == 0;
 
 }
 
@@ -90,8 +92,8 @@ void Buffer::enqueue(int data){
     // ********************************
 
     // Check if out of room
-    if(count == m_capacity){
-        throw std::overflow_error();
+    if(m_count == m_capacity){
+        throw std::overflow_error("Overflow");
     }else{
         m_buffer[m_end] = data;
         m_end = nextIndex(m_end);
@@ -104,34 +106,108 @@ int Buffer::dequeue(){
     // Implement dequeue() function
     // *****************************
 
+    int data = 0;
+
     // Check if array is empty
-    if(count <= 0){
-        throw std::underflow_error();
+    if(m_count <= 0){
+        throw std::underflow_error("Underflow");
     }else{
-        m_buffer[m_start] = data;
+        data = m_buffer[m_start];
         m_start = previousIndex(m_start);
     }
+
+    return data;
 }
 
-int Buffer::nextIndex(int currIndex) const {
+int Buffer::nextIndex(int currIndex) {
     if(currIndex == m_capacity-1){
         // If at the end of the array
         // The next index is at the beginning
-        return 0
+        return 0;
     }else{
         return ++currIndex;
     }
 }
 
-int Buffer::previousIndex(int currIndex) const {
+int Buffer::previousIndex(int currIndex) {
     if(currIndex == 0){
         // If at the beginning of the array
         // The next index is at the end
-        return m_capacity-1
+        return m_capacity-1;
     }else{
         return --currIndex;
     }
 }
+
+
+
+
+Buffer::Buffer(const Buffer & rhs){
+
+    // Deep copy
+    // Create new memory and copy rhs
+
+    if(rhs.m_capacity > 1){
+        m_capacity = rhs.m_capacity;
+
+        m_buffer = new int[m_capacity];
+
+        m_count = rhs.m_count;
+        m_start = rhs.m_start;
+        m_end = rhs.m_end;
+
+        // Fill the array with a copy
+        for(int i = 0; i < m_capacity; ++i){
+            m_buffer[i] = rhs.m_buffer[i];
+        }
+
+    }else{
+        m_capacity = 0;
+
+        m_buffer = nullptr;
+        m_count = 0;
+        m_start = 0;
+        m_end = 0;
+
+    }
+}
+
+const Buffer & Buffer::operator=(const Buffer & rhs){
+    // ******************************
+    // Implement assignment operator
+    // ******************************
+
+    if(this == &rhs){
+        // Self assignment 
+        return *this;
+    }
+
+    if(m_capacity != 0){
+        delete[] m_buffer;
+    }
+
+
+    *this = Buffer(rhs);
+
+    return *this;
+}
+
+void Buffer::dump(){
+    int start = m_start;
+    // int end = m_end;
+    int counter = 0;
+    cout << "Buffer size: " << m_capacity << " : ";
+    if (!empty()){
+        while(counter < m_count){
+            cout << m_buffer[start] << "[" << start << "]" << " ";
+            start = (start + 1) % m_capacity;
+            counter++;
+        }
+        cout << endl;
+    }
+    else cout << "Buffer is empty!" << endl;
+}
+
 
 // cap = 6
 // count = 0
@@ -207,54 +283,3 @@ int Buffer::previousIndex(int currIndex) const {
 // count = 0
 // -> 0
 
-
-
-
-Buffer::Buffer(const Buffer & rhs){
-
-    // Deep copy
-    // Create new memory and copy rhs
-
-    if(m_capacity > 1){
-        m_capacity = capacity;
-
-        m_buffer = new int[m_capacity];
-        m_count = 0;
-        m_start = m_buffer;
-        m_end = m_buffer[m_capacity-1];
-
-        // Fill the array with a copy
-
-    }else{
-        m_capacity = 0;
-
-        m_buffer = nullptr;
-        m_count = 0;
-        m_start = nullptr;
-        m_end = nullptr;
-
-    }
-}
-
-const Buffer & Buffer::operator=(const Buffer & rhs){
-    // ******************************
-    // Implement assignment operator
-    // ******************************
-    return *this;
-}
-
-void Buffer::dump(){
-    int start = m_start;
-    int end = m_end;
-    int counter = 0;
-    cout << "Buffer size: " << m_capacity << " : ";
-    if (!empty()){
-        while(counter < m_count){
-            cout << m_buffer[start] << "[" << start << "]" << " ";
-            start = (start + 1) % m_capacity;
-            counter++;
-        }
-        cout << endl;
-    }
-    else cout << "Buffer is empty!" << endl;
-}

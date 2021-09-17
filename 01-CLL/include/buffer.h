@@ -24,7 +24,7 @@ class Buffer{
     bool empty();           // returns true if buffer holds no items
     bool full();            // returns true if no space left in buffer
     int count();            // returns number of items currently held in the buffer
-    int capacity();         // returns maximum number of items this buffer can hold
+    int capacity() const;   // returns maximum number of items this buffer can hold
     void dump();            // prints out the contents, for debugging purposes
 
     private:

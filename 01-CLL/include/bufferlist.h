@@ -29,5 +29,9 @@ class BufferList{
     // ***************************************************
     // Any private helper functions must be delared here!
     // ***************************************************
+
+    void createNewBuffer(Buffer* prevBuffer);
+    void deleteOldestBuffer();
+    Buffer* getOldestBuffer();
 };
 #endif

@@ -26,7 +26,7 @@ class Tester{
 };
 int main(){
     Tester tester;
-    int bufferSize = 1000;
+    int bufferSize = 10;
     Buffer buffer(bufferSize);
     {
         //testing insertion/removal for 1 data item
@@ -92,11 +92,24 @@ bool Tester::BufferEnqueueDequeue(Buffer &buffer, int dataCount){
         try{
             buffer.enqueue(i);
         }catch(const std::overflow_error &e){
+
+             buffer.dump();
+             std::cout << "----" << i << "------" << std::endl;
             return false;
-        }catch(const std::underflow_error &e){
-            return false;
-        }    
+        }  
     }
+
+    for(int i=0;i<dataCount;i++){
+        try{
+            buffer.dequeue();
+        }catch(const std::underflow_error &e){
+             buffer.dump();
+             std::cout << "----" << i << "------" << std::endl;
+            return false;
+        }  
+    }
+
+
 
     return true;
 }
@@ -107,13 +120,10 @@ bool Tester::BufferCopyConstructor(const Buffer &buffer){
 
     Buffer newBuffer(buffer);
 
-    if(newBuffer.m_buffer == buffer.m_buffer) pass = false;
     if(newBuffer.capacity() != buffer.capacity()) pass = false;
 
-    for(int i = 0; i < newBuffer.capacity(); ++i){
-        if(newBuffer.m_buffer[i] != buffer.m_buffer[i]){
-            pass = false;
-        }
+    if(newBuffer.capacity() > 1){
+        if(newBuffer.m_buffer == buffer.m_buffer) pass = false;
     }
 
     return pass;

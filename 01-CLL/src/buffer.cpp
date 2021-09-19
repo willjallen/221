@@ -33,7 +33,7 @@ Buffer::Buffer(int capacity){
 
         m_buffer = new int[m_capacity];
         m_count = 0;
-        m_start = m_capacity-1;
+        m_start = 0;
         m_end = 0;
 
     }else{
@@ -92,11 +92,12 @@ void Buffer::enqueue(int data){
     // ********************************
 
     // Check if out of room
-    if(m_count == m_capacity){
+    if(m_count >= m_capacity){
         throw std::overflow_error("Overflow");
     }else{
         m_buffer[m_end] = data;
         m_end = nextIndex(m_end);
+        m_count += 1;
     }
 
 }
@@ -113,7 +114,8 @@ int Buffer::dequeue(){
         throw std::underflow_error("Underflow");
     }else{
         data = m_buffer[m_start];
-        m_start = previousIndex(m_start);
+        m_start = nextIndex(m_start);
+        m_count -= 1;
     }
 
     return data;

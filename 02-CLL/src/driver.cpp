@@ -267,9 +267,12 @@ bool Tester::BufferListCopyConstructor(const BufferList &copyBuffer){
                     return false;
                 }
             }
-
-            lhsBuffer = lhsBuffer->m_next;
-            rhsBuffer = rhsBuffer->m_next;
+     
+            if(lhsBuffer->m_next != nullptr && rhsBuffer->m_next != nullptr){
+                lhsBuffer = lhsBuffer->m_next;
+                rhsBuffer = rhsBuffer->m_next;
+            }
+     
         }
     }
 

@@ -205,6 +205,8 @@ void BufferList::createNewBuffer(Buffer* prevBuffer){
     }
 
     // Update the circular linked list 
+
+    // The previous last buffer would point to the oldest buffer (the one in the 'first' position)
     newBuffer->m_next = prevBuffer->m_next;
     prevBuffer->m_next = newBuffer;
 
@@ -241,7 +243,7 @@ void BufferList::deleteOldestBuffer(){
     oldestBuffer->clear();
     delete oldestBuffer;
 
-    // The youngest buffer(m_cusor)'s m_next is now the buffer after the oldest buffer
+    // The youngest buffer(m_cursor)'s m_next is now the buffer after the oldest buffer
     m_cursor->m_next = tempNext;
 
     m_listSize -= 1;

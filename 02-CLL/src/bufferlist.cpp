@@ -56,22 +56,6 @@ void BufferList::clear(){
     m_listSize = 0;
 
 
-    // VALGRIND DEBUG:
-    //*=curr, &=next
-    //  a&  b  c*    i=0 //Buffer* nextBuffer = currBuffer->m_next;
-    //  a&  b  \\*   i=0 //delete currBuffer;
-    //  a*& b  \\    i=0 //currBuffer = nextBuffer;
-
-    
-    //  a*  b&  \\    i=1 //Buffer* nextBuffer = currBuffer->m_next;
-    //  \\* b&  \\    i=1 //delete currBuffer;
-    //  \\  b*& \\    i=1 //currBuffer = nextBuffer;
-    
-    //  \\  b*  \\&    i=2 //Buffer* nextBuffer = currBuffer->m_next;
-    //          /\ <---Here is the issue
-    // 
-
-
 
 
 }

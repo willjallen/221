@@ -27,7 +27,7 @@ Buffer::Buffer(int capacity){
     if(capacity > 1){
         m_capacity = capacity;
 
-        m_buffer = new int[m_capacity];
+        m_buffer = new int[m_capacity]();
         m_count = 0;
         m_start = 0;
         m_end = 0;
@@ -149,7 +149,7 @@ Buffer::Buffer(const Buffer & rhs){
     if(rhs.m_capacity > 1){
         m_capacity = rhs.m_capacity;
 
-        m_buffer = new int[m_capacity];
+        m_buffer = new int[m_capacity]();
 
         m_count = rhs.m_count;
         m_start = rhs.m_start;

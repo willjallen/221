@@ -86,10 +86,27 @@ int main(){
             cout << "\tTest failed!\n";
     }
     {
+        // BufferListAssignmentConstructor
+        cout << "\nTest case: BufferList class: Copy constructor:\n" << endl;
+        
+        BufferList bufferList(5);
+        for (int i=40;i>0;i--)
+            bufferList.enqueue(i);
+
+        if (tester.BufferListAssignmentConstructor(bufferList))
+            cout << "\tTest passed!\n";
+        else
+            cout << "\tTest failed!\n";
+    }
+    {
         // BufferListCopyConstructor
-        cout << "\nTest case: BufferList class: Dequeue empty list:\n" << endl;
-        BufferList bufferList(0);
-        if (tester.BufferListDequeueEmpty(bufferList))
+        cout << "\nTest case: BufferList class: Copy constructor:\n" << endl;
+        
+        BufferList bufferList(5);
+        for (int i=40;i>0;i--)
+            bufferList.enqueue(i);
+
+        if (tester.BufferListCopyConstructor(bufferList))
             cout << "\tTest passed!\n";
         else
             cout << "\tTest failed!\n";
@@ -139,23 +156,29 @@ bool Tester::BufferEnqueueDequeue(Buffer &buffer, int dataCount){
 
 bool Tester::BufferCopyConstructor(const Buffer &buffer){
     
-    bool pass = true;
 
     Buffer newBuffer(buffer);
 
     // Same capacity?
-    if(newBuffer.capacity() != buffer.capacity()) pass = false;
+    if(newBuffer.capacity() != buffer.capacity()) return false;
 
     // Different buffer pointers?
     if(newBuffer.capacity() > 1){
-        if(newBuffer.m_buffer == buffer.m_buffer) pass = false;
+        if(newBuffer.m_buffer == buffer.m_buffer) return false;
     }
 
     // Same start and end?
-    if(newBuffer.m_start != buffer.m_start) pass = false;
-    if(newBuffer.m_end != buffer.m_end) pass = false;
+    if(newBuffer.m_start != buffer.m_start) return false;
+    if(newBuffer.m_end != buffer.m_end) return false;
 
-    return pass;
+    // Same values in buffer?
+    for(int i = 0; i < newBuffer.capacity(); i++){
+        if(newBuffer.m_buffer[i] != buffer.m_buffer[i]){
+            return false;
+        }
+    }
+
+    return true;
 
 }
 
@@ -203,18 +226,83 @@ bool Tester::BufferListDequeueEmpty(BufferList& bufferList){
     return false;
 }
 
-bool Tester::BufferListCopyConstructor(const BufferList &bufferlist){
-return 0;
+bool Tester::BufferListCopyConstructor(const BufferList &copyBuffer){
+
+    BufferList newBufferList(copyBuffer);
+
+    // Same size?
+    if(newBufferList.m_listSize != copyBuffer.m_listSize) return false;
+    // Same minimum capacity?
+    if(newBufferList.m_minBufCapacity != copyBuffer.m_minBufCapacity) return false;
+
+
+    // Memory in linked list different?
+    if(newBufferList.m_listSize > 0){
+
+        Buffer* lhsBuffer = newBufferList.m_cursor;
+        Buffer* rhsBuffer = copyBuffer.m_cursor;
+        
+        for(int i = 0; i < newBufferList.m_listSize; ++i){
+            // Points to the same memory
+            if(lhsBuffer == rhsBuffer){
+                return false;
+            }
+
+            // Same capacity?
+            if(lhsBuffer->capacity() != rhsBuffer->capacity()) return false;
+
+            // Different buffer pointers?
+            if(lhsBuffer->capacity() > 1){
+                if(lhsBuffer->m_buffer == rhsBuffer->m_buffer) return false;
+            }
+
+            // Same start and end?
+            if(lhsBuffer->m_start != rhsBuffer->m_start) return false;
+            if(lhsBuffer->m_end != rhsBuffer->m_end) return false;
+
+            
+            // Same values in buffer?
+            for(int i = 0; i < lhsBuffer->capacity(); i++){
+                if(lhsBuffer->m_buffer[i] != rhsBuffer->m_buffer[i]){
+                    return false;
+                }
+            }
+
+            lhsBuffer = lhsBuffer->m_next;
+            rhsBuffer = rhsBuffer->m_next;
+        }
+    }
+
+    return true;
+
+
 }
 
-bool Tester::BufferListAssignmentConstructor(const BufferList &bufferlist){
-return 0;
+bool Tester::BufferListAssignmentConstructor(const BufferList &rhsBufferList){
+
+
+
+    BufferList lhsBufferList = rhsBufferList;
+    // rhsCopy.clear(); // (Already cleared in operator function)
+
+
+    // // CLear rhs
+    // rhs.clear();
+
+    // // Call this test case as its testing the same thing fundamentally
+
+
+
+    return true;
+
+
 }
 
 void Tester::BufListEnqueuePerformance(int numTrials, int N){
     
+    int num_doublings = 5; // Arbitrary
 
-    for(int i = 0; i < 6; i++){
+    for(int i = 0; i < num_doublings; i++){
         clock_t c_start, c_end;
 
         c_start = clock();

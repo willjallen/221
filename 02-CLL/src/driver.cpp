@@ -286,14 +286,6 @@ bool Tester::BufferListAssignmentConstructor(const BufferList &rhsBufferList){
 
 
     BufferList lhsBufferList = rhsBufferList;
-    // rhsCopy.clear(); // (Already cleared in operator function)
-
-
-    // // CLear rhs
-    // rhs.clear();
-
-    // // Call this test case as its testing the same thing fundamentally
-
 
 
     return true;

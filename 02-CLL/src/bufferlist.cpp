@@ -14,10 +14,6 @@
 
 #include "../include/bufferlist.h"
 BufferList::BufferList(int minBufCapacity){
-    // **************************************
-    // Implement the alternative constructor
-    // **************************************
-
     if(minBufCapacity < 1){
         m_minBufCapacity = DEFAULT_MIN_CAPACITY;
     }else{
@@ -40,10 +36,6 @@ BufferList::~BufferList(){
 }
 
 void BufferList::clear(){
-    // *****************************
-    // Implement clear() function
-    // *****************************
-
     Buffer* currBuffer = m_cursor;
 
     for(int i = 0; i < m_listSize; i++){
@@ -61,41 +53,17 @@ void BufferList::clear(){
 }
 
 void BufferList::enqueue(const int& data) {
-    // ****************************************************************************
-    // Implement enqueue(...) function
-    // we always insert at the back, that would be the cursor
-    // if the current cursor is full we create a new node as cursor then we insert
-    // ****************************************************************************
-
-
     try{
         m_cursor->enqueue(data);
     }catch(std::overflow_error &e){
-        // std::cout << "overflow here" << std::endl;
-        // dump();
-        // std::cout << std::endl;
-        // std::cout << std::endl;
-        // // Buffer at m_cursor is full, create new buffer
-        // std::cout << m_cursor << std::endl;
+
         createNewBuffer(m_cursor);
-        // std::cout << "made new buffer" << std::endl;
-        // std::cout << m_cursor << std::endl;
-        // m_cursor->dump();
         m_cursor->enqueue(data);
-        // std::cout << "enqueued" << std::endl;
-        // m_cursor->dump();
-        // std::cout << std::endl;
-
-
     }
 
 }
 
 int BufferList::dequeue() {
-    // *****************************
-    // Implement dequeue() function
-    // *****************************
-
     bool success = false;
     bool exception = false;
 
@@ -127,10 +95,6 @@ int BufferList::dequeue() {
 }
 
 BufferList::BufferList(const BufferList & rhs){
-    // *******************************
-    // Implement the copy constructor
-    // *******************************
-
     // Copy member variables
     m_listSize = rhs.m_listSize;
     m_minBufCapacity = rhs.m_minBufCapacity;
@@ -170,9 +134,6 @@ BufferList::BufferList(const BufferList & rhs){
 
 
 const BufferList & BufferList::operator=(const BufferList & rhs){
-    // ******************************
-    // Implement assignment operator
-    // ******************************
     if(this == &rhs){
         // Self assignment 
         return *this;
@@ -248,18 +209,6 @@ void BufferList::createNewBuffer(Buffer* prevBuffer){
     m_cursor = newBuffer;
 
     m_listSize += 1;
-
-    // b1 
-    // - m_next = b1
-
-    // b1 
-    // - m_next = b2
-    // b2 
-    // - m_next = b1
-
-    // b1 - m_next = b2
-    // b2 - m_next = b3
-    // b3 - m_next = b1
 
 
 

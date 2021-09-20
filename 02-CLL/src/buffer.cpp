@@ -16,13 +16,6 @@
 
 
 Buffer::Buffer(int capacity){
-
-    // **************************************
-    // Implement the alternative constructor
-    // No need to set m_next to nullptr, 
-    // it will be handled by linked list,
-    // because it is used by linked list
-    // **************************************
     
     if(capacity > 1){
         m_capacity = capacity;
@@ -44,12 +37,7 @@ Buffer::Buffer(int capacity){
 }
 
 void Buffer::clear(){
-    // ***********************************
-    // Implement clear() function
-    // No need to set m_next to nullptr, 
-    // it will be handled by linked list,
-    // because it is used by linked list
-    // ***********************************
+
     delete[] m_buffer;
 
     m_buffer = nullptr;
@@ -68,26 +56,15 @@ int Buffer::count() {return m_count;}
 int Buffer::capacity() const {return m_capacity;}
 
 bool Buffer::full() {
-    // **************************
-    // Implement full() function
-    // **************************
     return m_count >= m_capacity;
 }
 
 bool Buffer::empty() {
-    // **************************
-    // Implement empty() function
-    // **************************
-
     return m_count == 0;
 
 }
 
 void Buffer::enqueue(int data){
-    // ********************************
-    // Implement enqueue(...) function
-    // ********************************
-
     // Check if out of room
     if(m_count >= m_capacity){
         throw std::overflow_error("Overflow");
@@ -100,10 +77,6 @@ void Buffer::enqueue(int data){
 }
 
 int Buffer::dequeue(){
-    // *****************************
-    // Implement dequeue() function
-    // *****************************
-
     int data = 0;
 
     // Check if array is empty
@@ -172,9 +145,6 @@ Buffer::Buffer(const Buffer & rhs){
 }
 
 const Buffer & Buffer::operator=(const Buffer & rhs){
-    // ******************************
-    // Implement assignment operator
-    // ******************************
 
     if(this == &rhs){
         // Self assignment 
@@ -206,79 +176,3 @@ void Buffer::dump(){
     }
     else cout << "Buffer is empty!" << endl;
 }
-
-
-// cap = 6
-// count = 0
-// * = start
-// $ = end
-
-
-// [0$,0, 0, 0, 0, 0*]
-
-// -> push [0]
-
-// [0, 0$, 0, 0, 0, 0*]
-// count = 1
-
-// -> push [1]
-
-// [0, 1, 0$, 0, 0, 0*]
-// count = 2
-
-// -> push [2]
-
-// [0, 1, 2, 0$, 0, 0*]
-// count = 3
-
-// -> push [3]
-
-// [0,1, 2, 3, 0$, 0*]
-// count = 4
-
-// -> push [4]
-
-// [0, 1, 2, 3, 4, 0$*]
-// count = 5
-
-// -> push [5]
-
-// [0$, 1, 2, 3, 4, 5*]
-// count = 6
-
-// -> pop
-
-// [0$, 1, 2, 3, 4*, 5]
-// count = 5
-// -> 5
-
-// -> pop
-
-// [0$, 1, 2, 3*, 4, 5]
-// count = 4
-// -> 4
-
-// -> pop
-
-// [0$, 1, 2*, 3, 4, 5]
-// count = 3
-// -> 3
-
-// -> pop
-
-// [0$, 1*, 2, 3, 4, 5]
-// count = 2
-// -> 2
-
-// -> pop
-
-// [0$*, 1, 2, 3, 4, 5]
-// count = 1
-// -> 1
-
-// -> pop
-
-// [0$, 1, 2, 3, 4, 5*]
-// count = 0
-// -> 0
-

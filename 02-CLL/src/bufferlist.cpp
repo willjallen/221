@@ -47,7 +47,6 @@ void BufferList::clear(){
     Buffer* next = getOldestBuffer();
 
     for(int i = 0; i < m_listSize; i++){
-        next->clear();
         Buffer* temp = next->m_next;
         delete next;
 

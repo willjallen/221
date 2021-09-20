@@ -44,16 +44,33 @@ void BufferList::clear(){
     // Implement clear() function
     // *****************************
 
-    Buffer* next = getOldestBuffer();
+    Buffer* currBuffer = m_cursor;
 
     for(int i = 0; i < m_listSize; i++){
-        Buffer* temp = next->m_next;
-        delete next;
+        Buffer* nextBuffer = currBuffer->m_next;
+        delete currBuffer;
+        currBuffer = nextBuffer;
 
-        next = temp;
     }
 
     m_listSize = 0;
+
+
+    // VALGRIND DEBUG:
+    //*=curr, &=next
+    //  a&  b  c*    i=0 //Buffer* nextBuffer = currBuffer->m_next;
+    //  a&  b  \\*   i=0 //delete currBuffer;
+    //  a*& b  \\    i=0 //currBuffer = nextBuffer;
+
+    
+    //  a*  b&  \\    i=1 //Buffer* nextBuffer = currBuffer->m_next;
+    //  \\* b&  \\    i=1 //delete currBuffer;
+    //  \\  b*& \\    i=1 //currBuffer = nextBuffer;
+    
+    //  \\  b*  \\&    i=2 //Buffer* nextBuffer = currBuffer->m_next;
+    //          /\ <---Here is the issue
+    // 
+
 
 
 
@@ -240,7 +257,6 @@ void BufferList::deleteOldestBuffer(){
     Buffer* tempNext = oldestBuffer->m_next;
 
     // Delete the buffer
-    oldestBuffer->clear();
     delete oldestBuffer;
 
     // The youngest buffer(m_cursor)'s m_next is now the buffer after the oldest buffer
@@ -254,6 +270,7 @@ void BufferList::deleteOldestBuffer(){
 // This function exists for clarity
 Buffer* BufferList::getOldestBuffer() const {
     // The oldest buffer will always been m_cursor->m_next (the buffer at position 1)
+    
     return m_cursor->m_next;
 
 }

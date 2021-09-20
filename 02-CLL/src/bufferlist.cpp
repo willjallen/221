@@ -182,8 +182,40 @@ const BufferList & BufferList::operator=(const BufferList & rhs){
         clear();
     }
 
+    // Copy member variables
+    m_listSize = rhs.m_listSize;
+    m_minBufCapacity = rhs.m_minBufCapacity;
 
-    *this = BufferList(rhs);
+    m_cursor = nullptr;
+
+    // Deep copy linked list
+
+    // Get oldest buffer
+    Buffer* rhsBuffer = rhs.getOldestBuffer();
+
+    // Store one iteration behind to do linking
+    Buffer* prevNewBuffer = nullptr;
+    Buffer* newBuffer = nullptr;
+    Buffer* firstBuffer = nullptr;
+
+    for(int i = 0; i < m_listSize; i++){
+        newBuffer = new Buffer(*rhsBuffer);
+        if(i == 0) firstBuffer = newBuffer;
+
+        rhsBuffer = rhsBuffer->m_next;
+
+        if(prevNewBuffer != nullptr){
+            prevNewBuffer->m_next = newBuffer;
+        }
+
+        prevNewBuffer = newBuffer;
+        
+    }
+
+    m_cursor = newBuffer;
+    m_cursor->m_next = firstBuffer;
+
+
 
     return *this;
 }

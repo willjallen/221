@@ -78,7 +78,34 @@ int main(){
     }
     {
         // BufferListEnqueueDequeue
-        cout << "\nTest case: BufferList class: Dequeue empty list:\n" << endl;
+        cout << "\nTest case: BufferList class: Inserting/removing 1 items:\n";
+        BufferList bufferList(0);
+        if (tester.BufferListEnqueueDequeue(bufferList, 1))
+            cout << "\tTest passed!\n";
+        else
+            cout << "\tTest failed!\n";
+    }
+    {
+        // BufferListEnqueueDequeue
+        cout << "\nTest case: BufferList class: Inserting/removing 11 items:\n";
+        BufferList bufferList(0);
+        if (tester.BufferListEnqueueDequeue(bufferList, 11))
+            cout << "\tTest passed!\n";
+        else
+            cout << "\tTest failed!\n";
+    }
+    {
+        // BufferListEnqueueDequeue
+        cout << "\nTest case: BufferList class: Inserting/removing 10000 items:\n";
+        BufferList bufferList(0);
+        if (tester.BufferListEnqueueDequeue(bufferList, 10000))
+            cout << "\tTest passed!\n";
+        else
+            cout << "\tTest failed!\n";
+    }
+    {
+        // BufferListDequeueEmpty
+        cout << "\nTest case: BufferList class: Dequeue empty list:\n";
         BufferList bufferList(0);
         if (tester.BufferListDequeueEmpty(bufferList))
             cout << "\tTest passed!\n";
@@ -87,7 +114,7 @@ int main(){
     }
     {
         // BufferListAssignmentConstructor
-        cout << "\nTest case: BufferList class: Copy constructor:\n" << endl;
+        cout << "\nTest case: BufferList class: Assignment operator:\n";
         
         BufferList bufferList(5);
         for (int i=40;i>0;i--)
@@ -100,7 +127,7 @@ int main(){
     }
     {
         // BufferListCopyConstructor
-        cout << "\nTest case: BufferList class: Copy constructor:\n" << endl;
+        cout << "\nTest case: BufferList class: Copy constructor:\n";
         
         BufferList bufferList(5);
         for (int i=40;i>0;i--)
@@ -203,14 +230,19 @@ bool Tester::BufferEnqueueFull(int size){
 }
 
 bool Tester::BufferListEnqueueDequeue(BufferList& bufferList, int dataCount){
-    for (int i=0;i<dataCount;i++) {
-        bufferList.enqueue(i); 
-    }
+    try{
+        for (int i=0;i<dataCount;i++) {
+            bufferList.enqueue(i); 
+        }
 
-    for (int i=0;i<dataCount;i++) {
-        bufferList.dequeue(); 
+        for (int i=0;i<dataCount;i++) {
+            bufferList.dequeue(); 
+        }
+    }catch(overflow_error &e){
+        return false;
+    }catch(underflow_error &e){
+        return false;
     }
-
 
     return true;
 }
@@ -283,10 +315,67 @@ bool Tester::BufferListCopyConstructor(const BufferList &copyBuffer){
 
 bool Tester::BufferListAssignmentConstructor(const BufferList &rhsBufferList){
 
+    /*
+         "To check whether it created a deep copy, we can clear the rhs object 
+         and check that the data is preserved in the current object by calling dequeue."
+
+         These instructions are a little vauge. How do we check if data is being preserved if the
+         rhs is cleared? What are we comparing it to? What do we do with the values retrieved from
+         dequeue?
+
+         Also, my implementation of operator= is identitical to my copy constructor.
+    */
 
 
-    BufferList lhsBufferList = rhsBufferList;
+    BufferList lhsBufferList(0);
 
+    lhsBufferList = rhsBufferList;
+
+    // Same size?
+    if(lhsBufferList.m_listSize != rhsBufferList.m_listSize) return false;
+    // Same minimum capacity?
+    if(lhsBufferList.m_minBufCapacity != rhsBufferList.m_minBufCapacity) return false;
+
+
+    // Memory in linked list different?
+    if(lhsBufferList.m_listSize > 0){
+
+        Buffer* lhsBuffer = lhsBufferList.m_cursor;
+        Buffer* rhsBuffer = rhsBufferList.m_cursor;
+        
+        for(int i = 0; i < lhsBufferList.m_listSize; ++i){
+            // Points to the same memory
+            if(lhsBuffer == rhsBuffer){
+                return false;
+            }
+
+            // Same capacity?
+            if(lhsBuffer->capacity() != rhsBuffer->capacity()) return false;
+
+            // Different buffer pointers?
+            if(lhsBuffer->capacity() > 1){
+                if(lhsBuffer->m_buffer == rhsBuffer->m_buffer) return false;
+            }
+
+            // Same start and end?
+            if(lhsBuffer->m_start != rhsBuffer->m_start) return false;
+            if(lhsBuffer->m_end != rhsBuffer->m_end) return false;
+
+            
+            // Same values in buffer?
+            for(int i = 0; i < lhsBuffer->capacity(); i++){
+                if(lhsBuffer->m_buffer[i] != rhsBuffer->m_buffer[i]){
+                    return false;
+                }
+            }
+     
+            if(lhsBuffer->m_next != nullptr && rhsBuffer->m_next != nullptr){
+                lhsBuffer = lhsBuffer->m_next;
+                rhsBuffer = rhsBuffer->m_next;
+            }
+     
+        }
+    }
 
     return true;
 

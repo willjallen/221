@@ -32,6 +32,6 @@ class BufferList{
 
     void createNewBuffer(Buffer* prevBuffer);
     void deleteOldestBuffer();
-    Buffer* getOldestBuffer();
+    Buffer* getOldestBuffer() const;
 };
 #endif

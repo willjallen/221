@@ -104,6 +104,13 @@ int BufferList::dequeue() {
     while(!success){
         exception = false;
 
+        if(m_cursor == getOldestBuffer()){
+            if(m_cursor->count() == 0){
+                throw std::underflow_error("BufferList underflow");
+                return -1;
+            }
+        }
+
         try{
             data = getOldestBuffer()->dequeue();
         }catch(std::underflow_error &e){
@@ -123,12 +130,61 @@ BufferList::BufferList(const BufferList & rhs){
     // *******************************
     // Implement the copy constructor
     // *******************************
+
+    // Copy member variables
+    m_listSize = rhs.m_listSize;
+    m_minBufCapacity = rhs.m_minBufCapacity;
+
+    m_cursor = nullptr;
+
+    // Deep copy linked list
+
+    // Get oldest buffer
+    Buffer* rhsBuffer = rhs.getOldestBuffer();
+
+    // Store one iteration behind to do linking
+    Buffer* prevNewBuffer = nullptr;
+    Buffer* newBuffer = nullptr;
+    Buffer* firstBuffer = nullptr;
+
+    for(int i = 0; i < m_listSize; i++){
+        newBuffer = new Buffer(*rhsBuffer);
+        if(i == 0) firstBuffer = newBuffer;
+
+        rhsBuffer = rhsBuffer->m_next;
+
+        if(prevNewBuffer != nullptr){
+            prevNewBuffer->m_next = newBuffer;
+        }
+
+        prevNewBuffer = newBuffer;
+        
+    }
+
+    m_cursor = newBuffer;
+    m_cursor->m_next = firstBuffer;
+
+
+
 }
+
 
 const BufferList & BufferList::operator=(const BufferList & rhs){
     // ******************************
     // Implement assignment operator
     // ******************************
+    if(this == &rhs){
+        // Self assignment 
+        return *this;
+    }
+
+    if(m_listSize != 0){
+        clear();
+    }
+
+
+    *this = BufferList(rhs);
+
     return *this;
 }
 
@@ -195,7 +251,7 @@ void BufferList::deleteOldestBuffer(){
 
 
 // This function exists for clarity
-Buffer* BufferList::getOldestBuffer(){
+Buffer* BufferList::getOldestBuffer() const {
     // The oldest buffer will always been m_cursor->m_next (the buffer at position 1)
     return m_cursor->m_next;
 

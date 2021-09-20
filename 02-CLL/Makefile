@@ -2,9 +2,14 @@
 
 # all, run, valgrind, clean, and targets to compile each object class individually 
 
+ifeq ($(OS), Windows_NT)
+	EXECUTABLE=a.exe
+else
+	EXECUTABLE=a.out
+endif
 
 all: driver.o bufferlist.o buffer.o
-	g++ -Wall -std=c++11 driver.o bufferlist.o buffer.o -o driver.exe
+	g++ -Wall -std=c++11 driver.o bufferlist.o buffer.o -o $(EXECUTABLE)
 
 driver.o: src/driver.cpp
 	g++ -Wall -c src/driver.cpp
@@ -22,10 +27,10 @@ run:
 	$$(driver.exe)
 
 clean:
-	rm -rf *.o*
-	rm -rf *~
-	rm -f *.out
-	rm -f *~*.h.gcg *#
+	rm -r *.o*
+	rm -r *~
+	rm *.out
+	rm *~*.h.gcg *#
 
 
 

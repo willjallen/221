@@ -85,11 +85,6 @@ int BufferList::dequeue() {
 
         try{
             data = getOldestBuffer()->dequeue();
-            // If the oldest buffer is now empty
-            if(getOldestBuffer()->count() == 0){
-                // Delete it
-                deleteOldestBuffer();
-            }
         }catch(std::underflow_error &e){
             exception = true;
             deleteOldestBuffer();

@@ -24,7 +24,7 @@ valgrind:
 	valgrind -s --track-origins=yes ./driver.out
 
 run:
-	$$(./$(EXECUTABLE))
+	./$(EXECUTABLE)
 
 clean:
 	rm -r *.o

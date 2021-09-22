@@ -403,7 +403,7 @@ bool Tester::BufferListAssignmentConstructor(const BufferList &rhsBufferList){
 
 void Tester::BufListEnqueuePerformance(int numTrials, int N){
     
-    int num_doublings = 7; // Arbitrary
+    int num_doublings = 5; // Arbitrary
 
     for(int i = 0; i < num_doublings; i++){
         clock_t c_start, c_end;

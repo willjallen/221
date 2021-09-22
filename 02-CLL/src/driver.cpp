@@ -1,6 +1,6 @@
 /**********************************************
  ** File : Driver.cpp
- ** Project : CSCE 121 Project 2, Spring 2019
+ ** Project : CSCE 221 Project 2, Fall 2021
  ** Author : William Allen
  ** Date : 9/16/21
  ** Section : ???
@@ -30,6 +30,10 @@ class Tester{
     bool BufferListCopyConstructor(const BufferList &bufferlist);
     bool BufferListAssignmentConstructor(const BufferList &bufferlist);
     void BufListEnqueuePerformance(int numTrials, int N);
+
+    // Custom test cases
+    bool BufferListDequeueClearEmptyBuffer(BufferList &bufferlist);
+
 };
 int main(){
     Tester tester;
@@ -77,7 +81,7 @@ int main(){
             cout << "\tTest failed!\n"; 
     }
     {
-        // BufferListEnqueueDequeue
+        //testing insertion/removal for 1 data item
         cout << "\nTest case: BufferList class: Inserting/removing 1 items:\n";
         BufferList bufferList(0);
         if (tester.BufferListEnqueueDequeue(bufferList, 1))
@@ -86,7 +90,7 @@ int main(){
             cout << "\tTest failed!\n";
     }
     {
-        // BufferListEnqueueDequeue
+        //testing insertion/removal for 11 data items
         cout << "\nTest case: BufferList class: Inserting/removing 11 items:\n";
         BufferList bufferList(0);
         if (tester.BufferListEnqueueDequeue(bufferList, 11))
@@ -95,7 +99,7 @@ int main(){
             cout << "\tTest failed!\n";
     }
     {
-        // BufferListEnqueueDequeue
+        //testing insertion/removal for 10000 data item
         cout << "\nTest case: BufferList class: Inserting/removing 10000 items:\n";
         BufferList bufferList(0);
         if (tester.BufferListEnqueueDequeue(bufferList, 10000))
@@ -104,7 +108,7 @@ int main(){
             cout << "\tTest failed!\n";
     }
     {
-        // BufferListDequeueEmpty
+        //testing removal of data item in empty bufferlist
         cout << "\nTest case: BufferList class: Dequeue empty list:\n";
         BufferList bufferList(0);
         if (tester.BufferListDequeueEmpty(bufferList))
@@ -139,6 +143,16 @@ int main(){
             cout << "\tTest failed!\n";
     }
     {
+        cout << "\nTest case: Bufferlist class: Checking that empty buffers are cleared\n";
+        BufferList bufferList(5);
+        for (int i=0;i<=10;i++)
+            bufferList.enqueue(i);
+        if(tester.BufferListDequeueClearEmptyBuffer(bufferList))
+            cout << "\tTest passed!\n";
+        else
+            cout << "\tTest failed!\n";
+    }    
+    {
         //Measuring the efficiency of insertion functionality
         cout << "\nMeasuring the efficiency of insertion functionality:" << endl;
         int M = 5;//number of trials
@@ -153,6 +167,7 @@ int main(){
             bufferList.enqueue(i);
         bufferList.dump();
     }
+
     return 0;
 }
 
@@ -238,6 +253,7 @@ bool Tester::BufferListEnqueueDequeue(BufferList& bufferList, int dataCount){
         for (int i=0;i<dataCount;i++) {
             bufferList.dequeue(); 
         }
+    // Neither of these exceptions should occur    
     }catch(overflow_error &e){
         return false;
     }catch(underflow_error &e){
@@ -251,6 +267,7 @@ bool Tester::BufferListDequeueEmpty(BufferList& bufferList){
     try{
         bufferList.dequeue();
     }catch(std::underflow_error &e){
+        //Expected error
         return true;
     }catch(...){
         return false;
@@ -275,7 +292,7 @@ bool Tester::BufferListCopyConstructor(const BufferList &copyBuffer){
         Buffer* rhsBuffer = copyBuffer.m_cursor;
         
         for(int i = 0; i < newBufferList.m_listSize; ++i){
-            // Points to the same memory
+            // Points to the same memory, indicates failed deep copy
             if(lhsBuffer == rhsBuffer){
                 return false;
             }
@@ -285,6 +302,7 @@ bool Tester::BufferListCopyConstructor(const BufferList &copyBuffer){
 
             // Different buffer pointers?
             if(lhsBuffer->capacity() > 1){
+                // Points to the same memory, indicates failed deep copy
                 if(lhsBuffer->m_buffer == rhsBuffer->m_buffer) return false;
             }
 
@@ -323,8 +341,8 @@ bool Tester::BufferListAssignmentConstructor(const BufferList &rhsBufferList){
          rhs is cleared? What are we comparing it to? What do we do with the values retrieved from
          dequeue?
 
-         Also, my implementation of operator= is identitical to my copy constructor.
     */
+
 
 
     BufferList lhsBufferList(0);
@@ -344,7 +362,7 @@ bool Tester::BufferListAssignmentConstructor(const BufferList &rhsBufferList){
         Buffer* rhsBuffer = rhsBufferList.m_cursor;
         
         for(int i = 0; i < lhsBufferList.m_listSize; ++i){
-            // Points to the same memory
+            // Points to the same memory, indicates failed deep copy
             if(lhsBuffer == rhsBuffer){
                 return false;
             }
@@ -354,6 +372,7 @@ bool Tester::BufferListAssignmentConstructor(const BufferList &rhsBufferList){
 
             // Different buffer pointers?
             if(lhsBuffer->capacity() > 1){
+                // Points to the same memory, indicates failed deep copy
                 if(lhsBuffer->m_buffer == rhsBuffer->m_buffer) return false;
             }
 
@@ -384,7 +403,7 @@ bool Tester::BufferListAssignmentConstructor(const BufferList &rhsBufferList){
 
 void Tester::BufListEnqueuePerformance(int numTrials, int N){
     
-    int num_doublings = 5; // Arbitrary
+    int num_doublings = 7; // Arbitrary
 
     for(int i = 0; i < num_doublings; i++){
         clock_t c_start, c_end;
@@ -410,4 +429,20 @@ void Tester::BufListEnqueuePerformance(int numTrials, int N){
         
         N = N * 2;
     }
+}
+
+bool Tester::BufferListDequeueClearEmptyBuffer(BufferList &bufferlist){
+
+    bufferlist.dump();
+    int listSizePrev = bufferlist.m_listSize;
+
+    for(int i = 0; i < 5; i++)
+    bufferlist.dequeue();
+
+    int listSizeCurr = bufferlist.m_listSize;
+    bufferlist.dump();
+
+    if(listSizePrev - listSizeCurr == 1) return true;
+    return false;
+
 }

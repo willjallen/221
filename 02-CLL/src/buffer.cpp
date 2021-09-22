@@ -1,13 +1,16 @@
 /**********************************************
- ** File : Driver.cpp
- ** Project : CSCE 121 Project 2, Spring 2019
+ ** File : buffer.cpp
+ ** Project : CSCE 221 Project 2, Fall 2021
  ** Author : William Allen
  ** Date : 9/16/21
  ** Section : ???
  ** E-mail : willallen@tamu.edu
  **
- ** This file contains the Circular Linked List Buffer Implemenation.
- ** 
+ ** This file contains the buffer Implemenation.
+ ** The following program stores data in a fixed sized array,
+ ** in which data is added and removed in a ciruclar fashion by
+ ** adjusting the locations in the array where data is added and removed.
+ **
  **********************************************/
 
 #include <stdexcept>
@@ -20,6 +23,7 @@ Buffer::Buffer(int capacity){
     if(capacity > 1){
         m_capacity = capacity;
 
+        // Initialize array to avoid accessing uninitialized memory
         m_buffer = new int[m_capacity]();
         m_count = 0;
         m_start = 0;

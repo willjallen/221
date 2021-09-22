@@ -8,16 +8,16 @@ else
 	EXECUTABLE=driver.out
 endif
 
-all: driver.o bufferlist.o buffer.o
+all: driver bufferlist buffer.o
 	g++ -g -Wall -std=c++11 driver.o bufferlist.o buffer.o -o $(EXECUTABLE)
 
-driver.o: src/driver.cpp
+driver: src/driver.cpp
 	g++ -g -Wall -std=c++11  -c src/driver.cpp
 
-bufferlist.o: src/bufferlist.cpp
+bufferlist: src/bufferlist.cpp
 	g++ -g -Wall -std=c++11 -c src/bufferlist.cpp
 
-buffer.o: src/buffer.cpp
+buffer: src/buffer.cpp
 	g++ -g -Wall -std=c++11 -c src/buffer.cpp
 
 valgrind:

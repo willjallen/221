@@ -1,14 +1,16 @@
 /**********************************************
- ** File : Driver.cpp
- ** Project : CSCE 121 Project 2, Spring 2019
+ ** File : bufferlist.cpp
+ ** Project : CSCE 221 Project 2, Fall 2021
  ** Author : William Allen
  ** Date : 9/16/21
  ** Section : ???
  ** E-mail : willallen@tamu.edu
  **
- ** This file contains the main driver for Project 2.
- ** The following program is used to test the correctness 
- ** and completeness of the Circular Linked List.
+ ** This file contains the bufferlist.
+ ** The following program stores buffers in a circular linked list. 
+ ** Data is stored and removed in a FIFO order, such that data dequeued will
+ ** be removed from the oldest buffer, and data enqueued will be added to the 
+ ** newest buffer.
  ** 
  **********************************************/
 
@@ -72,7 +74,9 @@ int BufferList::dequeue() {
     while(!success){
         exception = false;
 
+        // If there is only one buffer
         if(m_cursor == getOldestBuffer()){
+            // And it is empty
             if(m_cursor->count() == 0){
                 throw std::underflow_error("BufferList underflow");
                 return -1;
@@ -81,6 +85,11 @@ int BufferList::dequeue() {
 
         try{
             data = getOldestBuffer()->dequeue();
+            // If the oldest buffer is now empty
+            if(getOldestBuffer()->count() == 0){
+                // Delete it
+                deleteOldestBuffer();
+            }
         }catch(std::underflow_error &e){
             exception = true;
             deleteOldestBuffer();
@@ -242,7 +251,7 @@ Buffer* BufferList::getOldestBuffer() const {
 
 
 
-void BufferList::dump(){
+void BufferList::dump() {
     Buffer* temp = m_cursor->m_next;
     for(int i=0;i<m_listSize;i++){
         temp->dump();

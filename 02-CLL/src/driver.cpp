@@ -436,7 +436,7 @@ bool Tester::BufferListDequeueClearEmptyBuffer(BufferList &bufferlist){
     bufferlist.dump();
     int listSizePrev = bufferlist.m_listSize;
 
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < 6; i++)
     bufferlist.dequeue();
 
     int listSizeCurr = bufferlist.m_listSize;

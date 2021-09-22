@@ -8,7 +8,7 @@ else
 	EXECUTABLE=driver.out
 endif
 
-all: driver bufferlist buffer.o
+all: driver bufferlist buffer
 	g++ -g -Wall -std=c++11 driver.o bufferlist.o buffer.o -o $(EXECUTABLE)
 
 driver: src/driver.cpp

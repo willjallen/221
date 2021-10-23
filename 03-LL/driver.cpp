@@ -19,7 +19,11 @@ bool Tester::testBasicDTreeInsert(DTree& dtree) {
     for(int i = 0; i < NUMACCTS; i++) {
         int disc = RANDDISC;
         Account newAcct = Account("", disc, 0, "", "");
-        if(!dtree.insert(newAcct)) {
+        
+        bool rtrn = dtree.insert(newAcct);
+        std::cout << (rtrn ? "true" : "false") << std::endl;
+        std::cout << rtrn << std::endl;
+        if(!rtrn) {
             cout << "Insertion on node " << disc << " did not return true" << endl;
             allInserted = false;
         }
@@ -58,7 +62,7 @@ int main() {
     /* Basic dtree tests */
     DTree dtree;
 
-    cout << "Testing DTree insertion...";
+    cout << "Testing DTree insertion..." << endl;
     if(tester.testBasicDTreeInsert(dtree)) {
         cout << "test passed" << endl;
     } else {

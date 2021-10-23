@@ -36,8 +36,12 @@ bool DTree::insert(Account newAcct) {
         _root = new DNode(newAcct);
         return true;
     }else{
-        return recursiveInsert(_root, newAcct);
+        bool rtrn =  recursiveInsert(_root, newAcct);
+        // std::cout << (rtrn ? "true" : "false") << std::endl;
+        // std::cout << (!rtrn ? "true" : "false") << std::endl;
+        return (int)rtrn;
     }
+
 
 
 
@@ -50,6 +54,9 @@ bool DTree::recursiveInsert(DNode* node, Account newAcct){
 
     // Update size of node and numVacant
     
+
+    cout << "node: " << node->getDiscriminator() << std::endl;
+    cout << "new account: " << newAcct.getDiscriminator() << std::endl;
 
     int nodeDisc = node->getDiscriminator();
 
@@ -64,6 +71,9 @@ bool DTree::recursiveInsert(DNode* node, Account newAcct){
                     node->_left->_vacant = false;
                     // Update size of node and numVacant
                     updateAndRebalanceNode(node->_left);
+
+                    return true;
+
                 }else{
                     // Duplicate
                 }
@@ -99,6 +109,9 @@ bool DTree::recursiveInsert(DNode* node, Account newAcct){
                     node->_right->_vacant = false;
                     // Update size of node and numVacant
                     updateAndRebalanceNode(node->_right);
+
+                    return true;
+
                 }else{
                     // Duplicate
                 }
@@ -124,8 +137,11 @@ bool DTree::recursiveInsert(DNode* node, Account newAcct){
     
     // Duplicate
     else{
-        cout << "node: " << node->getDiscriminator();
-        cout << "new account: " << newAcct.getDiscriminator();
+
+        std::cout << "duplicate" << std::endl;
+        std::cout << std::endl;
+        std::cout << "node: " << node->getDiscriminator() << std::endl;
+        std::cout << "new account: " << newAcct.getDiscriminator() << std::endl;
         return false;
     }
 

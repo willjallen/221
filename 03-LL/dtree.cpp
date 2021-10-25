@@ -293,10 +293,10 @@ void DTree::clear() {
 }
 
 void DTree::recursiveClear(DNode* node){
-    if(node = nullptr) return;
+    if(node == nullptr) return;
     recursiveClear(node->_left);
-    delete node;
     recursiveClear(node->_right);
+    delete node;
 }
 
 /**
@@ -396,7 +396,7 @@ std::unique_ptr<treeArray> DTree::treeToArray(DNode* node){
     return treeArr;
 }
 
-DNode* arrayToTree(std::unique_ptr<treeArray> array){
+DNode* arrayToTree(const std::unique_ptr<treeArray>& array){
     return nullptr;
 
 

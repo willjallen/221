@@ -180,6 +180,7 @@ private:
 
     /* IMPLEMENT (optional): any additional helper functions here */
     std::unique_ptr<treeArray> treeToArray(DNode* node);
+    
     void recursiveTreeToArray(DNode* node, std::unique_ptr<DNode[]>& arr, int& itr);
 
 

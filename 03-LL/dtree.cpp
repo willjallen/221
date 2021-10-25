@@ -374,8 +374,10 @@ void DTree::updateNumVacant(DNode* node) {
 bool DTree::checkImbalance(DNode* node) {
     bool imbalance = false;
 
-    if(node->_left->_size < 4 && node->_right->_size < 4){
-        return false;
+    if(node->_left != nullptr && node->_right != nullptr){
+        if(node->_left->_size < 4 && node->_right->_size < 4){
+            return false;
+        }
     }
 
 
@@ -393,6 +395,13 @@ std::unique_ptr<treeArray> DTree::treeToArray(DNode* node){
 
     return treeArr;
 }
+
+DNode* arrayToTree(std::unique_ptr<treeArray> array){
+    return nullptr;
+
+
+}
+
 
 
 

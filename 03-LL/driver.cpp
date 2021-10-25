@@ -11,6 +11,7 @@ class Tester {
 public:
     bool testBasicDTreeInsert(DTree& dtree);
     bool testBasicDTreeRemove(DTree& dtree);
+    void testTreeToArray(DTree& dtree);
 
 };
 
@@ -54,6 +55,14 @@ bool Tester::testBasicDTreeRemove(DTree& dtree) {
     return allRemoved;
 }
 
+void Tester::testTreeToArray(DTree& dtree){
+    std::shared_ptr<treeArray> treeArr = dtree.treeToArray(dtree._root);
+    for(int i = 0; i < treeArr->size; ++i){
+        cout << treeArr->array[i].getDiscriminator() << ", ";
+    }
+    cout << endl;
+}
+
 
 
 int main() {
@@ -83,6 +92,9 @@ int main() {
     cout << "Resulting DTree:" << endl;
     dtree.dump();
     cout << endl;
+
+    cout << "To Array" << endl;
+    tester.testTreeToArray(dtree);
 
 
     return 0;

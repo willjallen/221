@@ -116,7 +116,6 @@ private:
     /* IMPLEMENT (optional): any other helper functions */
 };
 
-
 typedef struct treeArray{
     int size = 0;
     std::unique_ptr<DNode[]> array;
@@ -130,6 +129,8 @@ typedef struct treeArray{
     }
 
 } treeArray;
+
+
 
 class DTree {
     friend class Grader;
@@ -179,8 +180,8 @@ private:
     DNode* _root;
 
     /* IMPLEMENT (optional): any additional helper functions here */
-    std::unique_ptr<treeArray> treeToArray(DNode* node);
-    
+    std::shared_ptr<treeArray> treeToArray(DNode* node);
+    DNode* arrayToTree();
     void recursiveTreeToArray(DNode* node, std::unique_ptr<DNode[]>& arr, int& itr);
 
 

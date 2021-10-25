@@ -385,25 +385,15 @@ bool DTree::checkImbalance(DNode* node) {
 
 
 
-std::unique_ptr<treeArray> DTree::treeToArray(DNode* node){
-    int totalSize = node->_left->_size + node->_right->_size;
-    std::unique_ptr<treeArray> treeArr(new treeArray(totalSize));
+std::shared_ptr<treeArray> DTree::treeToArray(DNode* node){
+    int totalSize = 1 + node->_left->_size + node->_right->_size;
+    std::shared_ptr<treeArray> treeArr(new treeArray(totalSize));
 
     int itr = 0;
-
     recursiveTreeToArray(node, treeArr->array, itr);
 
     return treeArr;
 }
-
-DNode* arrayToTree(const std::unique_ptr<treeArray>& array){
-    return nullptr;
-
-
-}
-
-
-
 
 // Inorder: Left root right
 void DTree::recursiveTreeToArray(DNode* node, std::unique_ptr<DNode[]>& arr, int& itr){
@@ -411,9 +401,16 @@ void DTree::recursiveTreeToArray(DNode* node, std::unique_ptr<DNode[]>& arr, int
 
     recursiveTreeToArray(node->_left, arr, itr);
     arr[itr] = DNode(*node);
-    itr += 1;
     recursiveTreeToArray(node->_right, arr, itr);
 }
+
+
+DNode* arrayToTree(const std::shared_ptr<treeArray>& array){
+    return nullptr;
+
+
+}
+
 
 //----------------
 /**

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
+#include <memory>
 
 using std::cout;
 using std::endl;
@@ -27,6 +28,7 @@ using std::ostream;
 
 class Grader;   /* For grading purposes */
 class Tester;   /* Forward declaration for testing class */
+
 
 class Account {
 public:
@@ -114,6 +116,21 @@ private:
     /* IMPLEMENT (optional): any other helper functions */
 };
 
+
+typedef struct treeArray{
+    int size = 0;
+    std::unique_ptr<DNode[]> array;
+
+    treeArray(int size){
+        this->size = size;
+        this->array = std::unique_ptr<DNode[]>(new DNode[size]);
+    }
+
+    ~treeArray(){
+    }
+
+} treeArray;
+
 class DTree {
     friend class Grader;
     friend class Tester;
@@ -138,7 +155,12 @@ public:
     /* IMPLEMENT: "Helper" functions */
     bool recursiveInsert(DNode* node, Account newAcct);
     DNode* recursiveSearch(DNode* node, int disc);
+    bool recursiveRemove(DNode* node, int disc, DNode*& removed);
+    void recursiveClear(DNode* node);
+    bool updateAndRebanceAlongPath(int disc);
+    void recursiveUpdateAndRebanceAlongPath(DNode* node, int disc);
     void updateAndRebalanceNode(DNode* node);
+    
 
     int getNumUsers() const;
     string getUsername() const {return _root->getUsername();}
@@ -152,7 +174,13 @@ public:
     //----------------
 
 private:
+
+
     DNode* _root;
 
     /* IMPLEMENT (optional): any additional helper functions here */
+    std::unique_ptr<treeArray> treeToArray(DNode* node);
+    void recursiveTreeToArray(DNode* node, std::unique_ptr<DNode[]>& arr, int& itr);
+
+
 };

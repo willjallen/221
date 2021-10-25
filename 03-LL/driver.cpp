@@ -35,7 +35,7 @@ bool Tester::testBasicDTreeInsert(DTree& dtree) {
 bool Tester::testBasicDTreeRemove(DTree& dtree) {
     bool allRemoved = true;
     int numDiscriminators = 3;
-    int discriminators[] = {8735, 3516, 1271};
+    int discriminators[] = {207, 251, 883};
     DNode* removed = nullptr;
 
     for(int i = 0; i < numDiscriminators; i++) {

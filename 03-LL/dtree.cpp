@@ -380,14 +380,15 @@ bool DTree::checkImbalance(DNode* node) {
         }
     }
 
+    return false;
+
 
 }
 
 
-
 std::shared_ptr<TreeArray> DTree::treeToArray(DNode* node){
-    int totalSize = 1 + node->_left->_size + node->_right->_size;
-    std::shared_ptr<TreeArray> treeArr(new TreeArray(totalSize));
+    int totalSize = 1 + (node->_left->_size - node->_left->_numVacant) + (node->_right->_size - node->_right->_numVacant);
+    std::shared_ptr<TreeArray> treeArr = std::make_shared<TreeArray>(totalSize);
 
     int itr = 0;
     recursiveTreeToArray(node, treeArr->array, itr);
@@ -396,21 +397,80 @@ std::shared_ptr<TreeArray> DTree::treeToArray(DNode* node){
 }
 
 // Inorder: Left root right
-void DTree::recursiveTreeToArray(DNode* node, std::unique_ptr<DNode[]>& arr, int& itr){
+void DTree::recursiveTreeToArray(DNode* node, DNode* arr, int& itr){
     if(node == nullptr) return;
-
+    // TODO remove vacant
     recursiveTreeToArray(node->_left, arr, itr);
-    arr[itr] = DNode(*node);
-    itr += 1;
+    if(!node->isVacant()){
+        arr[itr] = DNode(node->getAccount());
+        itr += 1;
+    }
     recursiveTreeToArray(node->_right, arr, itr);
 }
 
 
-DNode* arrayToTree(const std::shared_ptr<TreeArray>& array){
-    return nullptr;
+
+
+
+void DTree::arrayToTree(DNode* node, std::shared_ptr<TreeArray> arr){
+
+    std::shared_ptr<TreeArray> treeArr = std::move(arr);
+
+    std::shared_ptr<BisectedArray> bisectedArray = bisectArray(treeArr->array, treeArr->size);    
+
+    recursiveArrayToTree(node, bisectedArray);
+
 
 
 }
+
+void DTree::recursiveArrayToTree(DNode* node, std::shared_ptr<BisectedArray> bArray){
+    std::shared_ptr<BisectedArray> bisectedArray = std::move(bArray);
+
+    // Visit, left, right
+    recursiveInsert(node, bisectedArray->rootNode->getAccount());
+    
+    // Left
+    // Root should be value of leftBisect
+    recursiveArrayToTree(node, bisectArray(bisectedArray->leftArray, bisectedArray->leftArraySize));
+    recursiveArrayToTree(node, bisectArray(bisectedArray->rightArray, bisectedArray->rightArraySize));
+      
+    
+
+
+}
+
+std::shared_ptr<BisectedArray> DTree::bisectArray(DNode* array, int size){
+
+    int rootNodeIndex = (size-1)/2;
+
+    int leftArraySize = rootNodeIndex;
+    int rightArraySize = (size-1)-rootNodeIndex;
+
+    DNode* leftArray = nullptr;
+    DNode* rightArray = nullptr;
+    DNode* rootNode = &(array[rootNodeIndex]);
+
+    if(leftArraySize > 0){
+        DNode* leftArray = new DNode[leftArraySize];
+        for(int i = 0; i < leftArraySize; i++){
+            leftArray[i] = array[i];
+        }
+    }
+
+    if(rightArraySize > 0){
+        DNode* rightArray = new DNode[rightArraySize];
+        for(int i = 0; i < rightArraySize; i++){
+            rightArray[i] = array[(rootNodeIndex+1)+i];
+        }
+    }
+
+
+    return std::make_shared<BisectedArray>(leftArray, leftArraySize, rightArray, rightArraySize, rootNode); 
+    return nullptr;
+
+}
+
 
 
 //----------------
@@ -418,9 +478,10 @@ DNode* arrayToTree(const std::shared_ptr<TreeArray>& array){
  * Begins and manages the rebalancing process for a 'Discrd' tree (pass by reference).
  * @param node DNode root of the subtree to balance
  */
-// void DTree::rebalance(DNode*& node) {
-
-// }
+void DTree::rebalance(DNode*& node) {
+    std::shared_ptr<TreeArray> treeArr = treeToArray(node);
+    arrayToTree(node, treeArr);
+}
 
 // -- OR --
 
@@ -429,9 +490,12 @@ DNode* arrayToTree(const std::shared_ptr<TreeArray>& array){
  * @param node DNode root of the subtree to balance
  * @return DNode root of the balanced subtree
  */
-DNode* DTree::rebalance(DNode* node) {
-    return nullptr;
-}
+// DNode* DTree::rebalance(DNode* node) {
+
+
+
+//     return nullptr;
+// }
 // ----------------
 
 /**

@@ -118,19 +118,37 @@ private:
 
 typedef struct treeArray{
     int size = 0;
-    std::unique_ptr<DNode[]> array;
+    DNode* array;
 
     treeArray(int size){
         this->size = size;
-        this->array = std::unique_ptr<DNode[]>(new DNode[size]);
+        this->array = new DNode[size];
     }
 
     ~treeArray(){
+        delete[] array;
     }
 
 } TreeArray;
 
 
+typedef struct bisectedArray{
+    DNode* leftArray;
+    int leftArraySize = 0;
+
+    DNode* rightArray;
+    int rightArraySize = 0;
+
+    DNode* rootNode;
+
+    bisectedArray(DNode* leftArray, int leftArraySize, DNode* rightArray, int rightArraySize, DNode* rootNode) : leftArray(leftArray), leftArraySize(leftArraySize), rightArray(rightArray), rightArraySize(rightArraySize), rootNode(rootNode) {}
+   
+   ~bisectedArray(){
+        delete[] leftArray;
+        delete[] rightArray;
+   }
+
+} BisectedArray;
 
 class DTree {
     friend class Grader;
@@ -169,9 +187,9 @@ public:
     void updateNumVacant(DNode* node);
     bool checkImbalance(DNode* node);
     //----------------
-    // void rebalance(DNode*& node);
+    void rebalance(DNode*& node);
     // -- OR --
-    DNode* rebalance(DNode* node);
+    // DNode* rebalance(DNode* node);
     //----------------
 
 private:
@@ -181,8 +199,10 @@ private:
 
     /* IMPLEMENT (optional): any additional helper functions here */
     std::shared_ptr<TreeArray> treeToArray(DNode* node);
-    DNode* arrayToTree();
-    void recursiveTreeToArray(DNode* node, std::unique_ptr<DNode[]>& arr, int& itr);
+    void arrayToTree(DNode* node, std::shared_ptr<TreeArray> arr);
+    void recursiveArrayToTree(DNode* node, std::shared_ptr<BisectedArray> bArray);
+    void recursiveTreeToArray(DNode* node, DNode* arr, int& itr);
 
+    std::shared_ptr<BisectedArray> bisectArray(DNode* array, int size);
 
 };

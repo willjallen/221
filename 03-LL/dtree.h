@@ -128,7 +128,7 @@ typedef struct treeArray{
     ~treeArray(){
     }
 
-} treeArray;
+} TreeArray;
 
 
 
@@ -180,7 +180,7 @@ private:
     DNode* _root;
 
     /* IMPLEMENT (optional): any additional helper functions here */
-    std::shared_ptr<treeArray> treeToArray(DNode* node);
+    std::shared_ptr<TreeArray> treeToArray(DNode* node);
     DNode* arrayToTree();
     void recursiveTreeToArray(DNode* node, std::unique_ptr<DNode[]>& arr, int& itr);
 

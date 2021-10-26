@@ -132,23 +132,42 @@ typedef struct treeArray{
 } TreeArray;
 
 
-typedef struct bisectedArray{
-    DNode* leftArray;
-    int leftArraySize = 0;
+// typedef struct bisectedArray{
+//     DNode* leftArray;
+//     int leftArraySize = 0;
 
-    DNode* rightArray;
-    int rightArraySize = 0;
+//     DNode* rightArray;
+//     int rightArraySize = 0;
 
-    DNode* rootNode;
+//     DNode* rootNode;
 
-    bisectedArray(DNode* leftArray, int leftArraySize, DNode* rightArray, int rightArraySize, DNode* rootNode) : leftArray(leftArray), leftArraySize(leftArraySize), rightArray(rightArray), rightArraySize(rightArraySize), rootNode(rootNode) {}
+//     bisectedArray(DNode* leftArray, int leftArraySize, DNode* rightArray, int rightArraySize, DNode* rootNode) : leftArray(leftArray), leftArraySize(leftArraySize), rightArray(rightArray), rightArraySize(rightArraySize), rootNode(rootNode) {}
    
-   ~bisectedArray(){
-        delete[] leftArray;
-        delete[] rightArray;
-   }
+//    ~bisectedArray(){
+//         delete[] leftArray;
+//         delete[] rightArray;
+//    }
 
-} BisectedArray;
+// } BisectedArray;
+
+typedef struct subArrIndxs{
+    int _left = 0;
+    int _right = 0;
+
+    subArrIndxs(int left, int right) : _left(left), _right(right) {}
+} subArrIndxs;
+
+// typedef struct bisectedArray{
+//     int _root = 0;
+
+//     indexPair _leftArray;
+//     indexPair _rightArray;
+
+//     bool _empty = false;
+
+//     bisectedArray(indexPair leftArray, indexPair rightArray, int root) : _leftArray(leftArray), _rightArray(rightArray), _root(root) {}
+
+// } BisectedArray;
 
 class DTree {
     friend class Grader;
@@ -179,7 +198,9 @@ public:
     bool updateAndRebanceAlongPath(int disc);
     void recursiveUpdateAndRebanceAlongPath(DNode* node, int disc);
     void updateAndRebalanceNode(DNode* node);
-    
+    void updateAlongPath(int disc);
+    void recursiveUpdateAlongPath(DNode* node, int disc);
+    void updateNode(DNode* node);
 
     int getNumUsers() const;
     string getUsername() const {return _root->getUsername();}
@@ -198,11 +219,10 @@ private:
     DNode* _root;
 
     /* IMPLEMENT (optional): any additional helper functions here */
-    std::shared_ptr<TreeArray> treeToArray(DNode* node);
-    void arrayToTree(DNode* node, std::shared_ptr<TreeArray> arr);
-    void recursiveArrayToTree(DNode* node, std::shared_ptr<BisectedArray> bArray);
+    TreeArray* treeToArray(DNode* node);
     void recursiveTreeToArray(DNode* node, DNode* arr, int& itr);
-
-    std::shared_ptr<BisectedArray> bisectArray(DNode* array, int size);
+    
+    void arrayToTree(DNode* node, TreeArray* arr);
+    void recursiveBisectArrayIntoTree(DNode* rootInsertNode, DNode* nodeArray, subArrIndxs bisectedArr, bool firstPass);
 
 };

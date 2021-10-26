@@ -157,6 +157,9 @@ bool DTree::updateAndRebanceAlongPath(int disc){
     return false;
 }
 
+void DTree::updateAlongPath(int disc){
+    recursiveUpdateAlongPath(_root, disc);
+}   
 
 /**
  * Updates the sizes and number of vacant nodes along the path to a trajectory node
@@ -181,7 +184,22 @@ void DTree::recursiveUpdateAndRebanceAlongPath(DNode* node, int disc){
 
 }
 
+void DTree::recursiveUpdateAlongPath(DNode* node, int disc){
+    int nodeDisc = node->getDiscriminator();
 
+    if(disc < nodeDisc){
+        recursiveUpdateAlongPath(node->_left, disc);
+    }
+
+    if(disc > nodeDisc){
+        recursiveUpdateAlongPath(node->_right, disc);
+    }
+
+    std::cout << "disc:" << nodeDisc << std::endl;
+    updateNode(node);
+    return;
+
+}
 
 
 
@@ -194,6 +212,12 @@ void DTree::updateAndRebalanceNode(DNode* node){
     updateSize(node);
     updateNumVacant(node);
     if(checkImbalance(node)) rebalance(node);
+
+}
+
+void DTree::updateNode(DNode* node){
+    updateSize(node);
+    updateNumVacant(node);
 
 }
 
@@ -296,6 +320,7 @@ void DTree::recursiveClear(DNode* node){
     if(node == nullptr) return;
     recursiveClear(node->_left);
     recursiveClear(node->_right);
+    cout << "deleting: " << node->getDiscriminator() << endl;
     delete node;
 }
 
@@ -375,8 +400,15 @@ bool DTree::checkImbalance(DNode* node) {
     bool imbalance = false;
 
     if(node->_left != nullptr && node->_right != nullptr){
+            cout << "here" << endl;
+
         if(node->_left->_size < 4 && node->_right->_size < 4){
             return false;
+        }
+
+        if(node->_left->_size * 1.5 > node->_right->_size || node->_right->_size * 1.5 > node->_left->_size){
+            cout << "imbalance" << endl;
+            return true;
         }
     }
 
@@ -386,9 +418,9 @@ bool DTree::checkImbalance(DNode* node) {
 }
 
 
-std::shared_ptr<TreeArray> DTree::treeToArray(DNode* node){
+TreeArray* DTree::treeToArray(DNode* node){
     int totalSize = 1 + (node->_left->_size - node->_left->_numVacant) + (node->_right->_size - node->_right->_numVacant);
-    std::shared_ptr<TreeArray> treeArr = std::make_shared<TreeArray>(totalSize);
+    TreeArray* treeArr = new TreeArray(totalSize);
 
     int itr = 0;
     recursiveTreeToArray(node, treeArr->array, itr);
@@ -398,6 +430,8 @@ std::shared_ptr<TreeArray> DTree::treeToArray(DNode* node){
 
 // Inorder: Left root right
 void DTree::recursiveTreeToArray(DNode* node, DNode* arr, int& itr){
+        cout << "in recursive tree to array" << endl;
+
     if(node == nullptr) return;
     // TODO remove vacant
     recursiveTreeToArray(node->_left, arr, itr);
@@ -412,66 +446,51 @@ void DTree::recursiveTreeToArray(DNode* node, DNode* arr, int& itr){
 
 
 
-void DTree::arrayToTree(DNode* node, std::shared_ptr<TreeArray> arr){
-
-    std::shared_ptr<TreeArray> treeArr = std::move(arr);
-
-    std::shared_ptr<BisectedArray> bisectedArray = bisectArray(treeArr->array, treeArr->size);    
-
-    recursiveArrayToTree(node, bisectedArray);
+void DTree::arrayToTree(DNode* node, TreeArray* treeArr){
 
 
+    recursiveBisectArrayIntoTree(node, treeArr->array, subArrIndxs(0, treeArr->size-1), true);
 
 }
 
-void DTree::recursiveArrayToTree(DNode* node, std::shared_ptr<BisectedArray> bArray){
-    std::shared_ptr<BisectedArray> bisectedArray = std::move(bArray);
 
-    // Visit, left, right
-    recursiveInsert(node, bisectedArray->rootNode->getAccount());
+void DTree::recursiveBisectArrayIntoTree(DNode* rootInsertNode, DNode* nodeArray, subArrIndxs bisectedArr, bool firstPass){
     
+
+    int size = (bisectedArr._right - bisectedArr._left) + 1; 
+    if(size <= 0 || bisectedArr._left > bisectedArr._right) return;
+
+    int rootNodeIndex = bisectedArr._left + (size-1)/2;
+    // Visit
+    if(firstPass){
+        rootInsertNode->_account = nodeArray[rootNodeIndex].getAccount();
+    }else{
+        recursiveInsert(rootInsertNode, nodeArray[rootNodeIndex].getAccount());
+    }
+    updateAlongPath(nodeArray[rootNodeIndex].getAccount().getDiscriminator());
     // Left
-    // Root should be value of leftBisect
-    recursiveArrayToTree(node, bisectArray(bisectedArray->leftArray, bisectedArray->leftArraySize));
-    recursiveArrayToTree(node, bisectArray(bisectedArray->rightArray, bisectedArray->rightArraySize));
-      
+    recursiveBisectArrayIntoTree(rootInsertNode, nodeArray, subArrIndxs(bisectedArr._left, rootNodeIndex-1), false);
+    // Right
+    recursiveBisectArrayIntoTree(rootInsertNode, nodeArray, subArrIndxs(rootNodeIndex+1, bisectedArr._right), false);
+
+
+}
+
+
+    // int rootNodeIndex = (size-1)/2;
+
+    // int leftArrFirstIndx = 0;
+    // int leftArrLastIndx = rootNodeIndex-1;
+    // int leftArrSize = leftArrLastIndx - leftArrFirstIndx;
+
+    // int rightArrFirstIndx = rootNodeIndex+1;
+    // int rightArrLastIndx = size-1;
+    // int rightArraySize = rightArrLastIndx - rightArrFirstIndx;
+
+
+    // subArr leftArray(leftArrFirstIndx, leftArrLastIndx, leftArrSize);
+    // subArr rightArray(rightArrFirstIndx, rightArrLastIndx, rightArraySize);
     
-
-
-}
-
-std::shared_ptr<BisectedArray> DTree::bisectArray(DNode* array, int size){
-
-    int rootNodeIndex = (size-1)/2;
-
-    int leftArraySize = rootNodeIndex;
-    int rightArraySize = (size-1)-rootNodeIndex;
-
-    DNode* leftArray = nullptr;
-    DNode* rightArray = nullptr;
-    DNode* rootNode = &(array[rootNodeIndex]);
-
-    if(leftArraySize > 0){
-        DNode* leftArray = new DNode[leftArraySize];
-        for(int i = 0; i < leftArraySize; i++){
-            leftArray[i] = array[i];
-        }
-    }
-
-    if(rightArraySize > 0){
-        DNode* rightArray = new DNode[rightArraySize];
-        for(int i = 0; i < rightArraySize; i++){
-            rightArray[i] = array[(rootNodeIndex+1)+i];
-        }
-    }
-
-
-    return std::make_shared<BisectedArray>(leftArray, leftArraySize, rightArray, rightArraySize, rootNode); 
-    return nullptr;
-
-}
-
-
 
 //----------------
 /**
@@ -479,8 +498,27 @@ std::shared_ptr<BisectedArray> DTree::bisectArray(DNode* array, int size){
  * @param node DNode root of the subtree to balance
  */
 void DTree::rebalance(DNode*& node) {
-    std::shared_ptr<TreeArray> treeArr = treeToArray(node);
-    arrayToTree(node, treeArr);
+    cout << "===================" << endl;
+    cout << "Rebalance: " << node->getDiscriminator() << endl;
+    
+    // cout << "Tree before clear:" << endl;
+    // dump();
+    // cout << endl;
+
+    // TreeArray* treeArr = treeToArray(node);
+
+    // cout << "Tree after clear:" << endl;
+
+    // recursiveClear(node->_left);
+    // recursiveClear(node->_right);
+    // // dump();
+    // cout << endl;
+    // arrayToTree(node, treeArr);
+    // cout << "Tree after arrayToTree:" << endl;
+    // // dump();
+    // cout << endl;
+    // cout << "====================" << endl;
+    // delete treeArr;
 }
 
 // -- OR --

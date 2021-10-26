@@ -1,7 +1,7 @@
 #include "dtree.h"
 #include <random>
 
-#define NUMACCTS 20
+#define NUMACCTS 10
 #define RANDDISC (distAcct(rng))
 
 std::mt19937 rng(10);

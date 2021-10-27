@@ -74,9 +74,9 @@ bool DTree::recursiveInsert(DNode* node, Account newAcct){
 
     // Update size of node and numVacant
     
-    cout << "Current Node: " << node->getDiscriminator() << endl;
-    cout << "New account to add: " << newAcct.getDiscriminator() << endl;
-    cout << endl;
+    //cout << "Current Node: " << node->getDiscriminator() << endl;
+    //cout << "New account to add: " << newAcct.getDiscriminator() << endl;
+    //cout << endl;
 
     int nodeDisc = node->getDiscriminator();
 
@@ -143,7 +143,7 @@ bool DTree::recursiveInsert(DNode* node, Account newAcct){
         }
 
     }else{
-        cout << "Found Duplicate" << std::endl;
+        //cout << "Found Duplicate" << std::endl;
         return false;
     }
     
@@ -187,19 +187,19 @@ void DTree::recursiveUpdateAndRebalanceAlongPath(DNode* node, int disc){
         recursiveUpdateAndRebalanceAlongPath(node->_right, disc);
     }
 
-    cout << "Update & rebalance disc:" << nodeDisc << std::endl;
+    //cout << "Update & rebalance disc:" << nodeDisc << std::endl;
     if(node->_left != nullptr){
-        cout << "left size: " << node->_left->_size << endl;
+        //cout << "left size: " << node->_left->_size << endl;
     }else{
-        cout << "left size: 0" << endl;
+        //cout << "left size: 0" << endl;
     }
 
     if(node->_right != nullptr){
-        cout << "right size: " << node->_right->_size << endl; 
+        //cout << "right size: " << node->_right->_size << endl; 
     }else{
-        cout << "right size: 0" << endl;
+        //cout << "right size: 0" << endl;
     }
-    cout << endl;
+    //cout << endl;
 
     updateAndRebalanceNode(node);
     return;
@@ -237,7 +237,7 @@ void DTree::recursiveUpdateAlongPath(DNode* node, int disc){
         recursiveUpdateAlongPath(node->_right, disc);
     }
 
-    cout << "Update disc:" << nodeDisc << std::endl;
+    //cout << "Update disc:" << nodeDisc << std::endl;
     updateNode(node);
     return;
 
@@ -322,9 +322,9 @@ bool DTree::checkImbalance(DNode* node) {
         }
 
         if(node->_left->_size * 1.5 < node->_right->_size || node->_right->_size * 1.5 < node->_left->_size){
-            cout << "Imbalance found" << endl;
-            cout << "Left Node Size: "  << node->_left->_size << endl;
-            cout << "Right Node Size: "  << node->_right->_size << endl;
+            //cout << "Imbalance found" << endl;
+            //cout << "Left Node Size: "  << node->_left->_size << endl;
+            //cout << "Right Node Size: "  << node->_right->_size << endl;
             return true;
         }
 
@@ -334,18 +334,18 @@ bool DTree::checkImbalance(DNode* node) {
     if(node->_right == nullptr && node->_left != nullptr){
         if(node->_left->_size >= 4){
             return true;
-            cout << "Imbalance found" << endl;
-            cout << "Left Node Size: "  << node->_left->_size << endl;
-            cout << "Right Node Size: "  << node->_right->_size << endl;
+            //cout << "Imbalance found" << endl;
+            //cout << "Left Node Size: "  << node->_left->_size << endl;
+            //cout << "Right Node Size: "  << node->_right->_size << endl;
         }
     }
 
     if(node->_left == nullptr && node->_right != nullptr){
         if(node->_right->_size >= 4){
             return true;
-            cout << "Imbalance found" << endl;
-            cout << "Left Node Size: "  << node->_left->_size << endl;
-            cout << "Right Node Size: "  << node->_right->_size << endl;
+            //cout << "Imbalance found" << endl;
+            //cout << "Left Node Size: "  << node->_left->_size << endl;
+            //cout << "Right Node Size: "  << node->_right->_size << endl;
         }
     }
     return false;
@@ -462,7 +462,7 @@ void DTree::recursiveClear(DNode* node){
     if(node == nullptr) return;
     recursiveClear(node->_left);
     recursiveClear(node->_right);
-    cout << "Deleting: " << node->getDiscriminator() << endl;
+    //cout << "Deleting: " << node->getDiscriminator() << endl;
     delete node;
 }
 
@@ -571,10 +571,10 @@ void DTree::recursiveBisectArrayIntoTree(DNode* rootInsertNode, DNode* nodeArray
     // Visit
     if(firstPass){
         rootInsertNode->_account = nodeArray[rootNodeIndex].getAccount();
-        cout << "Setting rootNode to: " << nodeArray[rootNodeIndex].getAccount().getDiscriminator() << endl;
+        //cout << "Setting rootNode to: " << nodeArray[rootNodeIndex].getAccount().getDiscriminator() << endl;
 
     }else{
-        cout << "Inserting: " << nodeArray[rootNodeIndex].getAccount().getDiscriminator() << endl;
+        //cout << "Inserting: " << nodeArray[rootNodeIndex].getAccount().getDiscriminator() << endl;
         recursiveInsert(rootInsertNode, nodeArray[rootNodeIndex].getAccount());
         updateAlongPath(nodeArray[rootNodeIndex].getAccount().getDiscriminator());
     }
@@ -590,20 +590,20 @@ void DTree::recursiveBisectArrayIntoTree(DNode* rootInsertNode, DNode* nodeArray
  * @param node DNode root of the subtree to balance
  */
 void DTree::rebalance(DNode*& node) {
-    cout << "===================" << endl;
-    cout << "Rebalance: " << node->getDiscriminator() << endl;
+    //cout << "===================" << endl;
+    //cout << "Rebalance: " << node->getDiscriminator() << endl;
     
-    cout << "Tree before clear:" << endl;
-    dump();
-    cout << endl;
+    //cout << "Tree before clear:" << endl;
+    // dump();
+    //cout << endl;
 
     TreeArray* treeArr = treeToArray(node);
-    cout << "TreeArr: " << endl;
-    cout << "size=" << treeArr->size << endl;
+    //cout << "TreeArr: " << endl;
+    //cout << "size=" << treeArr->size << endl;
     for(int i = 0; i < treeArr->size; ++i){
-        cout << treeArr->array[i].getDiscriminator() << ", ";
+        //cout << treeArr->array[i].getDiscriminator() << ", ";
     }
-    cout << endl;
+    //cout << endl;
 
     // Clear and reset the root node
     // Don't delete as other nodes might connect to it
@@ -613,17 +613,24 @@ void DTree::rebalance(DNode*& node) {
     recursiveClear(node->_right);
     node->_right = nullptr;
     node->_size = 1;
-    cout << "Tree after clear:" << endl;
+    //cout << "Tree after clear:" << endl;
     
-    //dump();
-    cout << endl;
+    // dump();
+    //cout << endl;
 
     arrayToTree(node, treeArr);
-    cout << "Tree after arrayToTree:" << endl;
-    //dump();
-    cout << endl;
-    cout << "====================" << endl;
+    //cout << "Tree after arrayToTree:" << endl;
+    // dump();
+    //cout << endl;
+    //cout << "====================" << endl;
     delete treeArr;
+}
+
+int DTree::getTreeSize(){
+    if(_root != nullptr){
+        return _root->getSize();
+    }
+    return 0;
 }
 
 // -- OR --

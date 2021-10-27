@@ -199,6 +199,8 @@ public:
 
     /* IMPLEMENT: "Helper" functions */
 
+    int getTreeSize();
+
     DNode* copy(const DNode* rhsNode);
 
     bool recursiveInsert(DNode* node, Account newAcct);

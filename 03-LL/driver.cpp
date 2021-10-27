@@ -1,7 +1,7 @@
 #include "dtree.h"
 #include <random>
 
-#define NUMACCTS 10
+#define NUMACCTS 20
 #define RANDDISC (distAcct(rng))
 
 std::mt19937 rng(10);
@@ -52,6 +52,7 @@ bool Tester::testBasicDTreeRemove(DTree& dtree) {
     cout << "Inserting 1 element to cause an imbalance and to clear vacant nodes" << endl;
     Account bigAcct = Account("", 9999, 0, "", "");
     dtree.insert(bigAcct);
+    dtree.rebalance(dtree._root);
     return allRemoved;
 }
 

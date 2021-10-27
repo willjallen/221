@@ -191,16 +191,22 @@ public:
     void dump(DNode* node) const;
 
     /* IMPLEMENT: "Helper" functions */
+
+    DNode* copy(const DNode* rhsNode);
+
     bool recursiveInsert(DNode* node, Account newAcct);
     DNode* recursiveSearch(DNode* node, int disc);
     bool recursiveRemove(DNode* node, int disc, DNode*& removed);
     void recursiveClear(DNode* node);
-    bool updateAndRebanceAlongPath(int disc);
-    void recursiveUpdateAndRebanceAlongPath(DNode* node, int disc);
+
+    bool updateAndRebalanceAlongPath(int disc);
+    void recursiveUpdateAndRebalanceAlongPath(DNode* node, int disc);
     void updateAndRebalanceNode(DNode* node);
-    void updateAlongPath(int disc);
+    bool updateAlongPath(int disc);
     void recursiveUpdateAlongPath(DNode* node, int disc);
     void updateNode(DNode* node);
+
+    void recursivePrintAccounts(DNode* node) const;
 
     int getNumUsers() const;
     string getUsername() const {return _root->getUsername();}

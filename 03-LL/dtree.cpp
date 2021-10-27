@@ -21,7 +21,17 @@ DTree::~DTree() {
  * @return Deep copy of rhs
  */
 DTree& DTree::operator=(const DTree& rhs) {
+    _root = copy(rhs._root);
+    return *this;
+}
 
+DNode* DTree::copy(const DNode* rhsNode){
+    if(rhsNode == nullptr) return nullptr;
+
+    DNode* newNode = new DNode(rhsNode->getAccount());
+    newNode->_left = copy(rhsNode->_left);
+    newNode->_right = copy(rhsNode->_right);
+    return newNode;
 }
 
 /**
@@ -39,10 +49,8 @@ bool DTree::insert(Account newAcct) {
         return true;
     }else{
         bool rtrn =  recursiveInsert(_root, newAcct);
-        updateAndRebanceAlongPath(newAcct.getDiscriminator());
-        // std::cout << (rtrn ? "true" : "false") << std::endl;
-        // std::cout << (!rtrn ? "true" : "false") << std::endl;
-        return (int)rtrn;
+        updateAndRebalanceAlongPath(newAcct.getDiscriminator());
+        return rtrn;
     }
 
 
@@ -52,7 +60,11 @@ bool DTree::insert(Account newAcct) {
 }
 
 
-// Visit, left, right
+/**
+ * Recursive implementation of insert
+ * @param node the root node to begin insertion from
+ * @param newAcct the account to add
+ */ 
 bool DTree::recursiveInsert(DNode* node, Account newAcct){
 
     // Update size of node and numVacant
@@ -138,39 +150,36 @@ bool DTree::recursiveInsert(DNode* node, Account newAcct){
 
 
 /**
- * Bootstrap
  * Updates the sizes and number of vacant nodes along the path to a trajectory node
+ * Also checks for a size imbalance between two child nodes, and calls rebalance if so
  * @param node the target node
  * @return true if target node was found
  */
-bool DTree::updateAndRebanceAlongPath(int disc){
+bool DTree::updateAndRebalanceAlongPath(int disc){
     if(retrieve(disc)){
-        recursiveUpdateAndRebanceAlongPath(_root, disc);
+        recursiveUpdateAndRebalanceAlongPath(_root, disc);
         return true;
     }
 
     return false;
 }
 
-void DTree::updateAlongPath(int disc){
-    recursiveUpdateAlongPath(_root, disc);
-}   
 
 /**
- * Updates the sizes and number of vacant nodes along the path to a trajectory node
- * This works by updating on the unwiding trajectory of the stack
- * @param node the target node
- * 
+ * Recursive implementation of updateAndRebalanceAlongPath
+ * This works by updating on the unwinding trajectory of the stack
+ * @param node the root node
+ * @param disc the target node
  */
-void DTree::recursiveUpdateAndRebanceAlongPath(DNode* node, int disc){
+void DTree::recursiveUpdateAndRebalanceAlongPath(DNode* node, int disc){
     int nodeDisc = node->getDiscriminator();
 
     if(disc < nodeDisc){
-        recursiveUpdateAndRebanceAlongPath(node->_left, disc);
+        recursiveUpdateAndRebalanceAlongPath(node->_left, disc);
     }
 
     if(disc > nodeDisc){
-        recursiveUpdateAndRebanceAlongPath(node->_right, disc);
+        recursiveUpdateAndRebalanceAlongPath(node->_right, disc);
     }
 
     std::cout << "Rebalancing disc:" << nodeDisc << std::endl;
@@ -179,6 +188,26 @@ void DTree::recursiveUpdateAndRebanceAlongPath(DNode* node, int disc){
 
 }
 
+
+/**
+ * Updates the sizes and number of vacant nodes along the path to a trajectory node
+ * @param disc the target node
+ * @return true if target node was found
+ */
+bool DTree::updateAlongPath(int disc){
+    if(retrieve(disc)){
+        recursiveUpdateAlongPath(_root, disc);
+        return true;
+    }
+
+    return false;
+}   
+
+/**
+ * Recursive implementation of updateAlongPath
+ * @param node the root node
+ * @param disc the target node
+ */
 void DTree::recursiveUpdateAlongPath(DNode* node, int disc){
     int nodeDisc = node->getDiscriminator();
 
@@ -200,8 +229,8 @@ void DTree::recursiveUpdateAlongPath(DNode* node, int disc){
 
 /**
  * Updates the size and number of vacant nodes of a specific node
+ * Also checks for a size imbalance between two child nodes, and calls rebalance if so
  * @param node the target node
- * 
  */
 void DTree::updateAndRebalanceNode(DNode* node){
     updateSize(node);
@@ -210,141 +239,16 @@ void DTree::updateAndRebalanceNode(DNode* node){
 
 }
 
+/**
+ * Updates the size and number of vacant nodes of a specific node
+ * @param node the target node
+ */
 void DTree::updateNode(DNode* node){
     updateSize(node);
     updateNumVacant(node);
 
 }
 
-
-/**
- * Removes the specified DNode from the tree.
- * @param disc discriminator to match
- * @param removed DNode object to hold removed account
- * @return true if an account was removed, false otherwise
- */
-bool DTree::remove(int disc, DNode*& removed) {
-    bool status = recursiveRemove(_root, disc, removed);
-    updateAndRebanceAlongPath(disc);
-    return status;
- }
-
-/*
-
-
-TODO: return true/false does not propogate up the stack in the way i want updateAndReblance to
-idk how to fix this
-
-*/
-
-bool DTree::recursiveRemove(DNode* node, int disc, DNode*& removed){
-    if(node == nullptr) return false;
-
-    int nodeDisc = node->getDiscriminator();
-
-    if(disc < nodeDisc){
-        return recursiveRemove(node->_left, disc, removed);
-    }
-
-    else if(disc > nodeDisc){
-        return recursiveRemove(node->_right, disc, removed);
-    }
-    else{
-        
-        if(!node->isVacant()){
-            
-            removed = node;
-
-            node->_vacant = true;
-            return true;
-        }else{
-            return false;
-        }
-
-        
-    }
-
-    return false;
-
-
- }
-
-/**
- * Retrieves the specified Account within a DNode.
- * @param disc discriminator int to search for
- * @return DNode with a matching discriminator, nullptr otherwise
- */
-DNode* DTree::retrieve(int disc) {
-    if(_root != nullptr){
-        
-        if(_root->getDiscriminator() == disc){
-            return _root;
-        }
-
-        return recursiveSearch(_root, disc);
-    }
-
-    return nullptr;
-}
-
-DNode* DTree::recursiveSearch(DNode* node, int disc){
-    if(node == nullptr) return nullptr;
-
-    int nodeDisc = node->getDiscriminator();
-
-    if(disc < nodeDisc){
-        return recursiveSearch(node->_left, disc);
-    }
-
-
-    if(disc > nodeDisc){
-        return recursiveSearch(node->_right, disc);
-    }
-
-    return node;
-}
-
-/**
- * Helper for the destructor to clear dynamic memory.
- */
-void DTree::clear() {
-    recursiveClear(_root);
-}
-
-void DTree::recursiveClear(DNode* node){
-    if(node == nullptr) return;
-    recursiveClear(node->_left);
-    recursiveClear(node->_right);
-    cout << "Deleting: " << node->getDiscriminator() << endl;
-    delete node;
-}
-
-/**
- * Prints all accounts' details within the DTree.
- */
-void DTree::printAccounts() const {
-
-}
-
-/**
- * Dump the DTree in the '()' notation.
- */
-void DTree::dump(DNode* node) const {
-    if(node == nullptr) return;
-    cout << "(";
-    dump(node->_left);
-    cout << node->getAccount().getDiscriminator() << ":" << node->getSize() << ":" << node->getNumVacant();
-    dump(node->_right);
-    cout << ")";
-}
-
-/**
- * Returns the number of valid users in the tree.
- * @return number of non-vacant nodes
- */
-int DTree::getNumUsers() const {
-    return _root->getSize();
-}
 
 /**
  * Updates the size of a node based on the imedaite children's sizes
@@ -413,6 +317,161 @@ bool DTree::checkImbalance(DNode* node) {
 }
 
 
+/**
+ * Removes the specified DNode from the tree.
+ * @param disc discriminator to match
+ * @param removed DNode object to hold removed account
+ * @return true if an account was removed, false otherwise
+ */
+bool DTree::remove(int disc, DNode*& removed) {
+    bool status = recursiveRemove(_root, disc, removed);
+    updateAndRebalanceAlongPath(disc);
+    return status;
+ }
+
+
+/**
+ * Recursive implementation of remove
+ * @param node the root node
+ * @param disc discriminator to match
+ * @param removed DNode object to hold removed account
+ * @return true if an account was removed, false otherwise
+ */
+bool DTree::recursiveRemove(DNode* node, int disc, DNode*& removed){
+    if(node == nullptr) return false;
+
+    int nodeDisc = node->getDiscriminator();
+
+    if(disc < nodeDisc){
+        return recursiveRemove(node->_left, disc, removed);
+    }
+
+    else if(disc > nodeDisc){
+        return recursiveRemove(node->_right, disc, removed);
+    }
+    else{
+        
+        if(!node->isVacant()){
+            
+            removed = node;
+
+            node->_vacant = true;
+            return true;
+        }else{
+            return false;
+        }
+
+        
+    }
+
+    return false;
+
+
+ }
+
+/**
+ * Retrieves the specified Account within a DNode.
+ * @param disc discriminator int to search for
+ * @return DNode with a matching discriminator, nullptr otherwise
+ */
+DNode* DTree::retrieve(int disc) {
+    if(_root != nullptr){
+        
+        if(_root->getDiscriminator() == disc){
+            return _root;
+        }
+
+        return recursiveSearch(_root, disc);
+    }
+
+    return nullptr;
+}
+
+/**
+ * Recursively searches the specified Account within a DNode.
+ * @param disc discriminator int to search for
+ * @return DNode with a matching discriminator, nullptr otherwise
+ */
+DNode* DTree::recursiveSearch(DNode* node, int disc){
+    if(node == nullptr) return nullptr;
+
+    int nodeDisc = node->getDiscriminator();
+
+    if(disc < nodeDisc){
+        return recursiveSearch(node->_left, disc);
+    }
+
+
+    if(disc > nodeDisc){
+        return recursiveSearch(node->_right, disc);
+    }
+
+    return node;
+}
+
+/**
+ * Helper for the destructor to clear dynamic memory.
+ */
+void DTree::clear() {
+    recursiveClear(_root);
+}
+
+/**
+ * Recursively clears the tree
+ * @param node the root node
+ */
+void DTree::recursiveClear(DNode* node){
+    if(node == nullptr) return;
+    recursiveClear(node->_left);
+    recursiveClear(node->_right);
+    cout << "Deleting: " << node->getDiscriminator() << endl;
+    delete node;
+}
+
+/**
+ * Prints all accounts' details within the DTree.
+ */
+void DTree::printAccounts() const {
+    recursivePrintAccounts(_root);
+}
+
+/**
+ * Recursively prints the accounts in the tree (inorder traversal)
+ * @param node the root node
+ */
+void DTree::recursivePrintAccounts(DNode* node) const {
+    if(node == nullptr) return;
+
+    recursivePrintAccounts(node->_left);
+    cout << node->getAccount() << endl;
+    recursivePrintAccounts(node->_right);
+}
+
+/**
+ * Dump the DTree in the '()' notation.
+ */
+void DTree::dump(DNode* node) const {
+    if(node == nullptr) return;
+    cout << "(";
+    dump(node->_left);
+    cout << node->getAccount().getDiscriminator() << ":" << node->getSize() << ":" << node->getNumVacant();
+    dump(node->_right);
+    cout << ")";
+}
+
+/**
+ * Returns the number of valid users in the tree.
+ * @return number of non-vacant nodes
+ */
+int DTree::getNumUsers() const {
+    return _root->getSize();
+}
+
+/**
+ * Allocates a new array of nodes, excluding vacant nodes, sorted in increasing order
+ * @param node the root node
+ * @return pointer to TreeArray struct
+ */ 
 TreeArray* DTree::treeToArray(DNode* node){
     int totalSize = 1 + (node->_left->_size - node->_left->_numVacant) + (node->_right->_size - node->_right->_numVacant);
     TreeArray* treeArr = new TreeArray(totalSize);
@@ -423,7 +482,12 @@ TreeArray* DTree::treeToArray(DNode* node){
     return treeArr;
 }
 
-// Inorder: Left root right
+/**
+ * Recursive implementation of treeToArray (inorder traversal)
+ * @param node the root node
+ * @param arr array of nodes to fill
+ * @param itr iteration variable
+ */ 
 void DTree::recursiveTreeToArray(DNode* node, DNode* arr, int& itr){
     if(node == nullptr) return;
 
@@ -440,18 +504,27 @@ void DTree::recursiveTreeToArray(DNode* node, DNode* arr, int& itr){
 
 
 
-
+/**
+ * Constructs a (close to) perfect BST given an array of nodes
+ * @param node the root node
+ * @param treeArray* pointer to TreeArray struct
+ */ 
 void DTree::arrayToTree(DNode* node, TreeArray* treeArr){
-
-
     recursiveBisectArrayIntoTree(node, treeArr->array, subArrIndxs(0, treeArr->size-1), true);
-
 }
+
+/**
+ * Recursive implementation of arrayToTree
+ * Constructs a (close to) perfect BST by means of recursive array bisection (preorder traversal)
+ * Even indices are biased left
+ * @param node the root node
+ * @param treeArray* pointer to TreeArray struct
+ */ 
+
+
 
 
 void DTree::recursiveBisectArrayIntoTree(DNode* rootInsertNode, DNode* nodeArray, subArrIndxs bisectedArr, bool firstPass){
-    
-
     int size = (bisectedArr._right - bisectedArr._left) + 1; 
     if(size <= 0 || bisectedArr._left > bisectedArr._right) return;
 
@@ -470,25 +543,7 @@ void DTree::recursiveBisectArrayIntoTree(DNode* rootInsertNode, DNode* nodeArray
     recursiveBisectArrayIntoTree(rootInsertNode, nodeArray, subArrIndxs(bisectedArr._left, rootNodeIndex-1), false);
     // Right
     recursiveBisectArrayIntoTree(rootInsertNode, nodeArray, subArrIndxs(rootNodeIndex+1, bisectedArr._right), false);
-
-
 }
-
-
-    // int rootNodeIndex = (size-1)/2;
-
-    // int leftArrFirstIndx = 0;
-    // int leftArrLastIndx = rootNodeIndex-1;
-    // int leftArrSize = leftArrLastIndx - leftArrFirstIndx;
-
-    // int rightArrFirstIndx = rootNodeIndex+1;
-    // int rightArrLastIndx = size-1;
-    // int rightArraySize = rightArrLastIndx - rightArrFirstIndx;
-
-
-    // subArr leftArray(leftArrFirstIndx, leftArrLastIndx, leftArrSize);
-    // subArr rightArray(rightArrFirstIndx, rightArrLastIndx, rightArraySize);
-    
 
 //----------------
 /**
@@ -510,6 +565,9 @@ void DTree::rebalance(DNode*& node) {
         cout << treeArr->array[i].getDiscriminator() << ", ";
     }
     cout << endl;
+
+    // Clear and reset the root node
+    // Don't delete as other nodes might connect to it
 
     recursiveClear(node->_left);
     node->_left = nullptr;

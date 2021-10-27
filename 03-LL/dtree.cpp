@@ -7,7 +7,6 @@
 
 #include "dtree.h"
 
-
 /**
  * Destructor, deletes all dynamic memory.
  */
@@ -21,6 +20,9 @@ DTree::~DTree() {
  * @return Deep copy of rhs
  */
 DTree& DTree::operator=(const DTree& rhs) {
+
+    clear();
+
     _root = copy(rhs._root);
     return *this;
 }
@@ -29,6 +31,9 @@ DNode* DTree::copy(const DNode* rhsNode){
     if(rhsNode == nullptr) return nullptr;
 
     DNode* newNode = new DNode(rhsNode->getAccount());
+    newNode->_size = rhsNode->_size;
+    newNode->_numVacant = rhsNode->_numVacant;
+
     newNode->_left = copy(rhsNode->_left);
     newNode->_right = copy(rhsNode->_right);
     return newNode;
@@ -69,8 +74,8 @@ bool DTree::recursiveInsert(DNode* node, Account newAcct){
 
     // Update size of node and numVacant
     
-    cout << "Current Node: " << node->getDiscriminator() << std::endl;
-    cout << "New account to add: " << newAcct.getDiscriminator() << std::endl;
+    cout << "Current Node: " << node->getDiscriminator() << endl;
+    cout << "New account to add: " << newAcct.getDiscriminator() << endl;
     cout << endl;
 
     int nodeDisc = node->getDiscriminator();
@@ -138,7 +143,7 @@ bool DTree::recursiveInsert(DNode* node, Account newAcct){
         }
 
     }else{
-        std::cout << "Found Duplicate" << std::endl;
+        cout << "Found Duplicate" << std::endl;
         return false;
     }
     
@@ -182,7 +187,20 @@ void DTree::recursiveUpdateAndRebalanceAlongPath(DNode* node, int disc){
         recursiveUpdateAndRebalanceAlongPath(node->_right, disc);
     }
 
-    std::cout << "Rebalancing disc:" << nodeDisc << std::endl;
+    cout << "Update & rebalance disc:" << nodeDisc << std::endl;
+    if(node->_left != nullptr){
+        cout << "left size: " << node->_left->_size << endl;
+    }else{
+        cout << "left size: 0" << endl;
+    }
+
+    if(node->_right != nullptr){
+        cout << "right size: " << node->_right->_size << endl; 
+    }else{
+        cout << "right size: 0" << endl;
+    }
+    cout << endl;
+
     updateAndRebalanceNode(node);
     return;
 
@@ -219,7 +237,7 @@ void DTree::recursiveUpdateAlongPath(DNode* node, int disc){
         recursiveUpdateAlongPath(node->_right, disc);
     }
 
-    std::cout << "disc:" << nodeDisc << std::endl;
+    cout << "Update disc:" << nodeDisc << std::endl;
     updateNode(node);
     return;
 
@@ -309,8 +327,27 @@ bool DTree::checkImbalance(DNode* node) {
             cout << "Right Node Size: "  << node->_right->_size << endl;
             return true;
         }
+
     }
 
+
+    if(node->_right == nullptr && node->_left != nullptr){
+        if(node->_left->_size >= 4){
+            return true;
+            cout << "Imbalance found" << endl;
+            cout << "Left Node Size: "  << node->_left->_size << endl;
+            cout << "Right Node Size: "  << node->_right->_size << endl;
+        }
+    }
+
+    if(node->_left == nullptr && node->_right != nullptr){
+        if(node->_right->_size >= 4){
+            return true;
+            cout << "Imbalance found" << endl;
+            cout << "Left Node Size: "  << node->_left->_size << endl;
+            cout << "Right Node Size: "  << node->_right->_size << endl;
+        }
+    }
     return false;
 
 
@@ -414,6 +451,7 @@ DNode* DTree::recursiveSearch(DNode* node, int disc){
  */
 void DTree::clear() {
     recursiveClear(_root);
+    _root = nullptr;
 }
 
 /**
@@ -473,7 +511,8 @@ int DTree::getNumUsers() const {
  * @return pointer to TreeArray struct
  */ 
 TreeArray* DTree::treeToArray(DNode* node){
-    int totalSize = 1 + (node->_left->_size - node->_left->_numVacant) + (node->_right->_size - node->_right->_numVacant);
+
+    int totalSize = node->_size - node->_numVacant;
     TreeArray* treeArr = new TreeArray(totalSize);
 
     int itr = 0;
@@ -576,12 +615,12 @@ void DTree::rebalance(DNode*& node) {
     node->_size = 1;
     cout << "Tree after clear:" << endl;
     
-    dump();
+    //dump();
     cout << endl;
 
     arrayToTree(node, treeArr);
     cout << "Tree after arrayToTree:" << endl;
-    dump();
+    //dump();
     cout << endl;
     cout << "====================" << endl;
     delete treeArr;
@@ -616,3 +655,4 @@ ostream& operator<<(ostream& sout, const Account& acct) {
             "\n\tStatus: " << acct.getStatus();
     return sout;
 }
+

@@ -5,13 +5,15 @@
 #define RANDDISC (distAcct(rng))
 
 std::mt19937 rng(10);
-std::uniform_int_distribution<> distAcct(0, 9999);
+std::uniform_int_distribution<> distAcct(0, 9999); 
 
 class Tester {
 public:
     bool testBasicDTreeInsert(DTree& dtree);
     bool testBasicDTreeRemove(DTree& dtree);
     void testTreeToArray(DTree& dtree);
+    bool testDeepCopy(DTree& dtree);
+    bool testSearch(DTree& dtree);
 
 };
 
@@ -22,8 +24,8 @@ bool Tester::testBasicDTreeInsert(DTree& dtree) {
         Account newAcct = Account("", disc, 0, "", "");
         
         bool rtrn = dtree.insert(newAcct);
-        std::cout << (rtrn ? "true" : "false") << std::endl;
-        std::cout << rtrn << std::endl;
+        // std::cout << (rtrn ? "true" : "false") << std::endl;
+        // std::cout << rtrn << std::endl;
         if(!rtrn) {
             cout << "Insertion on node " << disc << " did not return true" << endl;
             allInserted = false;
@@ -56,6 +58,8 @@ bool Tester::testBasicDTreeRemove(DTree& dtree) {
     return allRemoved;
 }
 
+
+
 void Tester::testTreeToArray(DTree& dtree){
     TreeArray* treeArr = dtree.treeToArray(dtree._root);
     for(int i = 0; i < treeArr->size; ++i){
@@ -65,6 +69,35 @@ void Tester::testTreeToArray(DTree& dtree){
     delete treeArr;
 }
 
+bool Tester::testDeepCopy(DTree& dtree){
+    cout << "rhs dump:" << endl;
+    dtree.dump();
+    cout << endl;
+
+    DTree newTree;
+    newTree = dtree;
+    cout << "new tree dump:" << endl;
+    newTree.dump();
+    cout << endl;
+
+    cout << "checking _root pointers are different" << endl;
+    if(dtree._root != newTree._root){
+        cout << "success" << endl;
+        return true;
+    }
+    cout << "fail" << endl;
+    cout << dtree._root << endl;
+    cout << newTree._root << endl;
+    return false;
+}
+
+bool Tester::testSearch(DTree& dtree){
+    dtree.clear();
+    for(int i = 0; i < 100; i++){
+        dtree.insert(Account("", i, 0, "", ""));
+    }
+    dtree.dump();
+}
 
 
 int main() {
@@ -94,6 +127,15 @@ int main() {
     cout << "Resulting DTree:" << endl;
     dtree.dump();
     cout << endl;
+
+    cout << "\n\nTesting deep copy..." << endl;
+    if(tester.testDeepCopy(dtree)) {
+        cout << "test passed" << endl;
+    } else {
+        cout << "test failed" << endl;
+    }
+
+    tester.testSearch(dtree);
 
     // cout << "To Array" << endl;
     // tester.testTreeToArray(dtree);

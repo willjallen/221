@@ -26,6 +26,11 @@ using std::ostream;
 #define DEFAULT_SIZE 1
 #define DEFAULT_NUM_VACANT 0
 
+#ifndef DEBUG_PRINT
+    #define DEBUG_PRINT 1
+#endif
+
+
 class Grader;   /* For grading purposes */
 class Tester;   /* Forward declaration for testing class */
 
@@ -73,6 +78,7 @@ private:
 
 /* Overloaded << operator to print Accounts */
 ostream& operator<<(ostream& sout, const Account& acct);
+
 
 class DNode {
     friend class Grader;
@@ -169,6 +175,7 @@ typedef struct subArrIndxs{
 
 // } BisectedArray;
 
+
 class DTree {
     friend class Grader;
     friend class Tester;
@@ -219,10 +226,12 @@ public:
     // DNode* rebalance(DNode* node);
     //----------------
 
+
 private:
 
 
     DNode* _root;
+
 
     /* IMPLEMENT (optional): any additional helper functions here */
     TreeArray* treeToArray(DNode* node);
@@ -231,4 +240,7 @@ private:
     void arrayToTree(DNode* node, TreeArray* arr);
     void recursiveBisectArrayIntoTree(DNode* rootInsertNode, DNode* nodeArray, subArrIndxs bisectedArr, bool firstPass);
 
+
+
 };
+

@@ -15,21 +15,27 @@ public:
     bool testDTreeClear(DTree& dtree);
 
     bool testDTreeInsertIntoEmptyTree(DTree& dtree);
+    bool testDTreeDuplicateInsert(DTree& dtree);
+    bool testDTreeInsertIntoVacantNode(DTree& dtree);
     
     bool testDTreeRemoveNonExistentNode(DTree& dtree);
     bool testDTreeRemoveVacantNode(DTree& dtree);
 
     void testDTreeTreeToArray(DTree& dtree);
+
     bool testDTreeDeepCopy(DTree& dtree);
+
     bool testDTreeSearch(DTree& dtree);
 
     bool testDTreeBalanced(DTree& dtree, int numInsertions);
     void testDTreeBalancedHelper(DTree& dtree, DNode* node, bool& returnStatus);
+    bool testDTreeBalancedLeftOnlyInsert(DTree& dtree, int numInsertions);
+    bool testDTreeBalancedRightOnlyInsert(DTree& dtree, int numInsertions);
+    bool testDTreeBalancedAllNodesRemoved(DTree& dtree);
 
-    bool testDTreeBSTProperty(DTree& dtree);
-    bool testDTreeBSTPropertyHelper(DNode* node);
+    bool testDTreeBSTProperty(DTree& dtree, int numInsertions);
+    void testDTreeBSTPropertyHelper(DNode* node, bool& returnStatus);
 
-    void DTreeShotgunTest(DTree& dtree, int insertSize, int deleteSize, int totalSize);
 
 };
 
@@ -49,8 +55,8 @@ bool Tester::testBasicDTreeInsert(DTree& dtree) {
 
 bool Tester::testBasicDTreeRemove(DTree& dtree) {
     bool allRemoved = true;
-    int numDiscriminators = 3;
-    int discriminators[] = {8735, 3516, 1271};
+    int numDiscriminators = 5;
+    int discriminators[] = {207, 251, 883, 1503, 1691};
     DNode* removed = nullptr;
 
     for(int i = 0; i < numDiscriminators; i++) {
@@ -60,13 +66,19 @@ bool Tester::testBasicDTreeRemove(DTree& dtree) {
         }
     }
 
-    cout << "Dumping the tree after 3 deletions time" << endl;
+    cout << "Dumping the tree after 5 deletions: " << endl;
     dtree.dump();
     cout << endl;
 
-    cout << "Inserting 1 element to cause an imbalance and to clear vacant nodes" << endl;
+    cout << "Inserting 7 elements to cause an imbalance and to clear vacant nodes: " << endl;
+    
+    int numInsert = 7;
     Account bigAcct = Account("", 9999, 0, "", "");
-    dtree.insert(bigAcct);
+    for(int i = 0; i < numInsert; ++i){
+        bigAcct = Account("", 9999-i, 0, "", "");
+        dtree.insert(bigAcct);
+    }
+
     return allRemoved;
 }
 
@@ -100,6 +112,26 @@ bool Tester::testDTreeInsertIntoEmptyTree(DTree& dtree){
     if(dtree._root->getDiscriminator() != 1111) status = false;
     return status;
 }
+
+bool Tester::testDTreeInsertIntoVacantNode(DTree& dtree){
+    dtree.clear();
+
+    for(int i = 0; i < NUMACCTS; i++) {
+        int disc = RANDDISC;
+        Account newAcct = Account("", disc, 0, "", "");
+        dtree.insert(newAcct); 
+    }
+
+
+    Account newAcct = Account("", 9999, 0, "", "");
+    dtree.insert(newAcct);
+
+    DNode* node;
+    dtree.remove(9999, node);
+    if(dtree.insert(newAcct)) return true;
+    return false;
+}
+
 
 bool Tester::testDTreeRemoveNonExistentNode(DTree& dtree){
     bool status = true;
@@ -203,6 +235,8 @@ bool Tester::testDTreeSearch(DTree& dtree){
 }
 
 bool Tester::testDTreeBalanced(DTree& dtree, int numInsertions){
+    dtree.clear();
+
     for(int i = 0; i < numInsertions; i++) {
         int disc = RANDDISC;
         Account newAcct = Account("", disc, 0, "", "");
@@ -246,71 +280,126 @@ void Tester::testDTreeBalancedHelper(DTree& dtree, DNode* node, bool& returnStat
 
 }
 
-// Insert 10 random nodes and delete 2 random nodes until size of tree is 9999
-// The idea of this test is this should never crash
-// If it does it has located some type of edge case
-// void Tester::DTreeShotgunTest(DTree& dtree, int insertSize, int deleteSize, int totalSize){
-//     dtree.clear();
+bool Tester::testDTreeBalancedLeftOnlyInsert(DTree& dtree, int numInsertions){
+    dtree.clear();
 
-//     int numInsertions = 0;
-//     int numDuplicateInsertions = 0;
-//     int numDeletions = 0;
-//     int numDuplicateDeletions = 0;
+    for(int i = 0; i < numInsertions; i++) {
+        Account newAcct = Account("", 9999-i, 0, "", "");
+        dtree.insert(newAcct);
+    }
+
+    cout << "Tree dump: " << endl;
+    dtree.dump();
+    cout << endl;
+
+    bool returnStatus = true;
+
+    testDTreeBalancedHelper(dtree, dtree._root, returnStatus);
+
+    return returnStatus;
+
+}
 
 
-//     while(dtree.getTreeSize() < insertSize){
-//         int disc = RANDDISC;
-//         Account newAcct;
+bool Tester::testDTreeBalancedRightOnlyInsert(DTree& dtree, int numInsertions){
+    dtree.clear();
 
-//         for(int i = 0; i < numInsertions; ++i){
-//             disc = RANDDISC;
-//             newAcct = Account("", disc, 0, "", "");
-//             // cout << dtree.insert(newAcct) << endl;
-//             while(!dtree.insert(newAcct)){
-//                 // cout << "here" << endl;
-//                 disc = RANDDISC;
-//                 newAcct = Account("", disc, 0, "", "");
-//                 numDuplicateInsertions++;
-//             }
-//             numInsertions++;
-//         }
-        
-//         TreeArray* treeArr;
-//         int del_disc;
+    for(int i = 0; i < numInsertions; i++) {
+        Account newAcct = Account("", i, 0, "", "");
+        dtree.insert(newAcct);
+    }
 
-//         for(int i = 0; i < deleteSize; ++i){
-//             if(dtree._root->_numVacant != dtree.getTreeSize()){
-//                 treeArr = dtree.treeToArray(dtree._root);
-//                 std::uniform_int_distribution<> distr(0, treeArr->size-1);
-//                 int index = distr(rng);
+    cout << "Tree dump: " << endl;
+    dtree.dump();
+    cout << endl;
 
-//                 del_disc = treeArr->array[index].getDiscriminator();
+    bool returnStatus = true;
 
-//                 DNode* node;
-//                 while(!dtree.remove(del_disc, node)){
-//                     cout << "here" << endl;
-//                     index = distr(rng);
-//                     del_disc = treeArr->array[index].getDiscriminator();
-//                     numDuplicateDeletions++;
-//                 }
-//                 numDeletions++;
+    testDTreeBalancedHelper(dtree, dtree._root, returnStatus);
 
-//                 delete treeArr;
-//             }
-//         }
-//     }
+    return returnStatus;
 
-//     cout << "Finished" << endl;
-//     cout << "Num Insertions: " << numInsertions << endl;
-//     cout << "Num Duplicate Insertions: " << numDuplicateInsertions << endl;
-//     cout << "Num Deletions: " << numDeletions << endl;
-//     cout << "Num Duplicate Deletions: " << numDuplicateDeletions << endl;
+}
 
-//     // dtree.dump();
-//     // cout << endl;
 
-// }
+bool Tester::testDTreeBalancedAllNodesRemoved(DTree& dtree){
+    dtree.clear();
 
+    // Insert root node
+    Account newAcct = Account("", 10, 0, "", "");
+    dtree.insert(newAcct);
+
+
+    // Insert 3 nodes on the left side
+    newAcct = Account("", 9, 0, "", "");
+    dtree.insert(newAcct);
+
+    newAcct = Account("", 8, 0, "", "");
+    dtree.insert(newAcct);
+
+    newAcct = Account("", 7, 0, "", "");
+    dtree.insert(newAcct);
+
+    // Remove all three nodes & root node (mark vacant)
+    DNode* node;
+    dtree.remove(10, node);
+    dtree.remove(9, node);
+    dtree.remove(8, node);
+    dtree.remove(7, node);
+
+    cout << "Tree dump after deletion: " << endl;
+    dtree.dump();
+    cout << endl;
+
+    // Insert one more node on the left side to create imbalance and clear vacant nodes
+    newAcct = Account("", 2, 0, "", "");
+    dtree.insert(newAcct);
+
+
+    cout << "Tree dump after rebalance: " << endl;
+    dtree.dump();
+    cout << endl;
+
+    if(dtree._root->getDiscriminator() != 2) return false;
+
+    return true;
+    
+}
+
+bool Tester::testDTreeBSTProperty(DTree& dtree, int numInsertions){
+    dtree.clear();
+
+    for(int i = 0; i < numInsertions; i++) {
+        int disc = RANDDISC;
+        Account newAcct = Account("", disc, 0, "", "");
+        dtree.insert(newAcct);
+    }
+
+    bool returnStatus = true;
+
+    testDTreeBSTPropertyHelper(dtree._root, returnStatus);
+
+    return returnStatus;
+}
+
+void Tester::testDTreeBSTPropertyHelper(DNode* node, bool& returnStatus){
+    if(node->_left != nullptr){
+        if(node->_left->getDiscriminator() < node->getDiscriminator()){
+            testDTreeBSTPropertyHelper(node->_left, returnStatus);
+        }else{
+            returnStatus = false;
+        }
+    
+    }
+
+    if(node->_right != nullptr){
+        if(node->_right->getDiscriminator() > node->getDiscriminator()){
+            testDTreeBSTPropertyHelper(node->_right, returnStatus);
+        }else{
+            returnStatus = false;
+        }
+    }
+}
 
 int main() {
     Tester tester;
@@ -349,6 +438,13 @@ int main() {
 
     cout << "\n\nTesting DTree insert into empty tree..." << endl;
     if(tester.testDTreeInsertIntoEmptyTree(dtree)) {
+        cout << "test passed" << endl;
+    } else {
+        cout << "test failed" << endl;
+    }
+
+    cout << "\n\nTesting DTree insert into vacant node..." << endl;
+    if(tester.testDTreeInsertIntoVacantNode(dtree)) {
         cout << "test passed" << endl;
     } else {
         cout << "test failed" << endl;
@@ -414,8 +510,6 @@ int main() {
     } else {
         cout << "test failed" << endl;
     }
-    // cout << "\n\nShotgun test..." << endl;
-    // tester.DTreeShotgunTest(dtree, 10, 2, 8000);
 
     cout << "\n\nTesting DTree balanced w/ 500 insertions..." << endl;
     if(tester.testDTreeBalanced(dtree, 500)) {
@@ -424,6 +518,33 @@ int main() {
         cout << "test failed" << endl;
     }
 
+    cout << "\n\nTesting DTree balanced(left insert only) w/ 20 insertions..." << endl;
+    if(tester.testDTreeBalancedLeftOnlyInsert(dtree, 20)) {
+        cout << "test passed" << endl;
+    } else {
+        cout << "test failed" << endl;
+    }
+
+    cout << "\n\nTesting DTree balanced(right insert only) w/ 20 insertions..." << endl;
+    if(tester.testDTreeBalancedRightOnlyInsert(dtree, 20)) {
+        cout << "test passed" << endl;
+    } else {
+        cout << "test failed" << endl;
+    }
+
+    cout << "\n\nTesting DTree balanced(all nodes removed)" << endl;
+    if(tester.testDTreeBalancedAllNodesRemoved(dtree)) {
+        cout << "test passed" << endl;
+    } else {
+        cout << "test failed" << endl;
+    }
+
+    cout << "\n\nTesting DTree BST property w/ 500 insertions..." << endl;
+    if(tester.testDTreeBSTProperty(dtree, 500)) {
+        cout << "test passed" << endl;
+    } else {
+        cout << "test failed" << endl;
+    }
 
     return 0;
 }

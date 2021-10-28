@@ -9,7 +9,6 @@
 #include <iostream>
 #include <string>
 #include <exception>
-#include <memory>
 
 using std::cout;
 using std::endl;
@@ -205,13 +204,12 @@ public:
 
     bool recursiveInsert(DNode* node, Account newAcct);
     DNode* recursiveSearch(DNode* node, int disc);
-    bool recursiveRemove(DNode* node, int disc, DNode*& removed);
     void recursiveClear(DNode* node);
 
-    bool updateAndRebalanceAlongPath(int disc);
+    void updateAndRebalanceAlongPath(int disc);
     void recursiveUpdateAndRebalanceAlongPath(DNode* node, int disc);
     void updateAndRebalanceNode(DNode* node);
-    bool updateAlongPath(int disc);
+    void updateAlongPath(int disc);
     void recursiveUpdateAlongPath(DNode* node, int disc);
     void updateNode(DNode* node);
 

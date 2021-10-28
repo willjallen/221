@@ -270,7 +270,6 @@ void DTree::updateNumVacant(DNode* node) {
  * @return (can change) returns true if an imbalance occured, false otherwise
  */
 bool DTree::checkImbalance(DNode* node) {
-    bool imbalance = false;
 
     if(node->_left != nullptr && node->_right != nullptr){
 

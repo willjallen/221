@@ -7,11 +7,11 @@ endif
 all: dtree.o driver.o
 	g++ -g -Wall -std=c++11 driver.o dtree.o  -o $(EXECUTABLE)
 
-driver: src/driver.cpp
-		g++ -g -Wall -std=c++11  -c src/driver.cpp
+driver.o: driver.cpp
+		g++ -g -Wall -std=c++11  -c driver.cpp
 
-bufferlist: dtree.cpp
-		g++ -g -Wall -std=c++11 -c src/dtree.cpp
+dtree.o: dtree.cpp
+		g++ -g -Wall -std=c++11 -c dtree.cpp
 
 valgrind:
 		valgrind -s --track-origins=yes ./driver.out

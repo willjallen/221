@@ -5,6 +5,7 @@
 zips/
 
 **.o
+!spec/dtree.o
 **.exe
 **.out
 .DS_Store

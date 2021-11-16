@@ -5,6 +5,7 @@
  */
 
 #include "utree.h"
+#include "dtree.h"
 
 /**
  * Destructor, deletes all dynamic memory.

@@ -7,6 +7,9 @@
 #include "utree.h"
 #include "dtree.h"
 
+using std::cout;
+using std::endl;
+
 /**
  * Destructor, deletes all dynamic memory.
  */
@@ -67,6 +70,13 @@ void UTree::loadData(string infile, bool append) {
 bool UTree::insert(Account newAcct) {
 
 
+    if(_root == nullptr){
+        _root = new UNode();
+        _root->getDTree()->insert(newAcct);
+        return true;
+    }
+
+
     if(recursiveInsert(_root, newAcct)){
         updateAndRebalanceAlongPath(newAcct);
         return true;
@@ -78,6 +88,7 @@ bool UTree::insert(Account newAcct) {
 
 
 bool UTree::recursiveInsert(UNode* node, Account newAcct){
+    cout << "here 1" << endl;
     if(newAcct.getUsername() < node->getUsername()){
         if(node->_left != nullptr){
             return recursiveInsert(node->_left, newAcct);
@@ -326,10 +337,10 @@ void UTree::clear() {
 }
 
 void UTree::recursiveClear(UNode* node){
-    // Inorder traversal
+    if(node == nullptr) return;
     recursiveClear(node->_left);
-    delete node;
     recursiveClear(node->_right);
+    delete node;
 }
 
 /**

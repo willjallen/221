@@ -88,7 +88,8 @@ bool UTree::insert(Account newAcct) {
 
 
 bool UTree::recursiveInsert(UNode* node, Account newAcct){
-    cout << "here 1" << endl;
+    // cout << "here 1" << endl;
+    // cout << "account" << newAcct << endl;
     if(newAcct.getUsername() < node->getUsername()){
         if(node->_left != nullptr){
             return recursiveInsert(node->_left, newAcct);
@@ -191,10 +192,11 @@ bool UTree::removeUser(string username, int disc, DNode*& removed) {
         return false;
     }
 
-    // if(userNode->getDTree()->_root->getSize() == 1){
-    //     // Delete the UNode
-    //     removeAVLNode(userNode);
-    // }
+    // DTree is empty?
+    if(userNode->getDTree()->getNumUsers() == 0){
+        // Delete the UNode
+        removeAVLNode(userNode);
+    }
 
 
     return false;
@@ -326,6 +328,8 @@ DNode* UTree::retrieveUser(string username, int disc) {
  */
 int UTree::numUsers(string username) {
     UNode* userNode = retrieve(username);
+    if(!userNode) return 0;
+
     return userNode->getDTree()->getNumUsers();
 }
 
@@ -334,6 +338,7 @@ int UTree::numUsers(string username) {
  */
 void UTree::clear() {
     recursiveClear(_root);
+    _root = nullptr;
 }
 
 void UTree::recursiveClear(UNode* node){
@@ -415,11 +420,6 @@ int UTree::checkImbalance(UNode* node) {
         return (node->_left->_height > node->_right->_height + 1 || node->_right->_height > node->_left->_height + 1);
     }
 
-    
-
-    // if(nodeLeft > nodeRight + 1 || nodeRight > nodeLeft + 1){ return 1; }
-
-
     return 0;
 }
 
@@ -431,12 +431,138 @@ int UTree::checkImbalance(UNode* node) {
 void UTree::rebalance(UNode*& node) {
     // Rebalance happens when abs(node_left_size - node_left_size) > 2
     // 4 cases
-    // GP -> left -> left
-    // GP -> right -> right
-    // GP -> left -> right
-    // GP -> right -> left
-// -- OR --
+
+
+
+
+    // GP(node) -> left -> left
+    // In this case the tree is left heavy, so we do a right rotation
+    if(node->_left != nullptr){
+        if(node->_left->_left != nullptr){
+            rotateRight(node);
+        }
+    }
+
+
+    // GP(node) -> right -> right
+    // In this case the tree is right heavy, so we do a left rotation
+    if(node->_right != nullptr){
+        if(node->_right->_right != nullptr){
+            rotateLeft(node);
+        }
+    }
+
+    // GP(node) -> left -> right
+    // In this case we must first do a left rotation w/ left node as root, then a right rotation with top node as root
+    if(node->_left != nullptr){
+        if(node->_left->_right != nullptr){
+            rotateLeft(node->_left);
+            rotateRight(node);            
+        }
+    }
+
+
+    // GP(node) -> right -> left
+    // In this case we must first do a rught rotation w/ right node as root, then a left rotation with top node as root
+    if(node->_right != nullptr){
+        if(node->_right->_left != nullptr){
+            rotateRight(node->_right);
+            rotateRight(node);              
+        }
+    }
+
 }
+
+
+void UTree::rotateLeft(UNode*& rootNode){
+/*
+    root
+    /  \
+    A   pivot
+        / \
+        B  C
+
+
+    to
+ 
+        pivot
+        /   \
+     root    C   
+     / \   
+    a   b   
+
+*/
+
+UNode* pivot = rootNode->_right;
+
+UNode* A = rootNode->_left;
+UNode* B = pivot->_left;
+UNode* C = pivot->_right;
+
+
+// Swap pivot with root
+DTree* swapTree = rootNode->getDTree();
+rootNode->getDTree() = pivot->getDTree();
+pivot->getDTree() = swapTree;
+
+// Update subtree connections
+rootNode->_left = pivot;
+
+rootNode->_right = C;
+pivot->_left = A;
+pivot->_right = B;
+
+
+
+
+}
+
+void UTree::rotateRight(UNode*& rootNode){
+/*
+            root
+            /  \
+         pivot  A
+          / \  
+         C  B
+
+
+               
+            to
+
+        pivot
+        /   \
+      C    root   
+            /  \
+            B   A
+
+*/
+
+UNode* pivot = rootNode->_left;
+
+UNode* A = rootNode->_right;
+UNode* B = pivot->_right;
+UNode* C = pivot->_left;
+
+
+// Swap pivot with root
+DTree* swapTree = rootNode->getDTree();
+rootNode->getDTree() = pivot->getDTree();
+pivot->getDTree() = swapTree;
+
+// Update subtree connections
+rootNode->_right = pivot;
+
+rootNode->_left = C;
+pivot->_right = A;
+pivot->_left = B;
+
+
+
+
+
+
+}
+
 
 /**
  * Begins and manages the rebalance procedure for an AVL tree (returns a pointer).

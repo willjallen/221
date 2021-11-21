@@ -102,5 +102,8 @@ private:
     DNode* recursiveRemoveUser(UNode* node, string username);
     UNode* findLargestNode(UNode* node);
 
+    void rotateLeft(UNode*& node);
+    void rotateRight(UNode*& node);
+
     /* IMPLEMENT (optional): any additional helper functions here! */
 };

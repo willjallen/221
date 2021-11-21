@@ -78,6 +78,7 @@ public:
     void updateAndRebalanceAlongPath(Account acct);
     void recursiveUpdateAndRebalanceAlongPath(UNode* node, Account acct);
     
+    void updateAndRebalance(UNode* node);
     
     UNode* recursiveInsert(UNode* node, string username);
     UNode* recursiveRetrieve(UNode* node, string username);
@@ -88,11 +89,18 @@ public:
     //----------------
     void rebalance(UNode*& node);
     // -- OR --
-    UNode* rebalance(UNode* node);
+    // UNode* rebalance(UNode* node);
     //----------------
 
 private:
     UNode* _root;
+
+
+    void recursivePrintUsers(UNode* node) const;
+
+    void removeAVLNode(UNode* node);
+    DNode* recursiveRemoveUser(UNode* node, string username);
+    UNode* findLargestNode(UNode* node);
 
     /* IMPLEMENT (optional): any additional helper functions here! */
 };

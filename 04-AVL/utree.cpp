@@ -11,7 +11,7 @@
  * Destructor, deletes all dynamic memory.
  */
 UTree::~UTree() {
-
+    clear();
 }
 
 /**
@@ -114,9 +114,10 @@ bool UTree::recursiveInsert(UNode* node, Account newAcct){
     // Add new account to DTree
     if(node->getDTree()->insert(newAcct)){
         return true;
-    }else{
-        return false;
     }
+
+    return false;
+    
 
 
 
@@ -131,11 +132,28 @@ void UTree::updateAndRebalanceAlongPath(Account acct){
 }
 
 void UTree::recursiveUpdateAndRebalanceAlongPath(UNode* node, Account acct){
+    if(node == nullptr) return;
 
+
+    if(acct.getUsername() < node->getUsername()){
+        recursiveUpdateAndRebalanceAlongPath(node->_left, acct);
+    }
+    if(acct.getUsername() > node->getUsername()){
+        recursiveUpdateAndRebalanceAlongPath(node->_right, acct);
+    }
+
+    updateAndRebalance(node);
 
 
 }
 
+
+void UTree::updateAndRebalance(UNode* node){
+    updateHeight(node);
+    if(checkImbalance(node)){
+        rebalance(node);
+    }
+}
 
 
 
@@ -148,8 +166,104 @@ void UTree::recursiveUpdateAndRebalanceAlongPath(UNode* node, Account acct){
  * @return true if an account was removed, false otherwise
  */
 bool UTree::removeUser(string username, int disc, DNode*& removed) {
+
+    UNode* userNode = retrieve(username);
+
+    if(!userNode){
+        return false;
+    }
+
+    DNode* discNode = nullptr;
+    userNode->getDTree()->remove(disc, discNode);
+
+    if(!discNode){
+        return false;
+    }
+
+    // if(userNode->getDTree()->_root->getSize() == 1){
+    //     // Delete the UNode
+    //     removeAVLNode(userNode);
+    // }
+
+
     return false;
+
 }
+
+
+void UTree::removeAVLNode(UNode* node){
+/*
+1. If the node to delete has a left subtree, locate the largest node in the left subtree. 
+ This node will be referenced as node X moving forward. Node X can be found by traversing down
+ to the left once and then as far right as possible. Copy node X’s value (DTree) into the node
+ with the empty DTree. (Hint: you overloaded an operator to perform to help here).
+
+2. If node X has a left child, the child will take node X’s place.
+
+3. Delete node X and, if it exists, shift the left child into its spot. 
+This can also be done by copying node X’s child’s value into node X and deleting the child
+instead.
+
+4. On the way back up the path taken to find node X, check for imbalances. AHH HOW
+
+5.If the node with an empty DTree does not have a left subtree, shift its right child into
+its spot.
+*/
+
+
+if(node->_left != nullptr){
+
+    // Does node have a left subtree
+    if(node->_left->_height > 1){
+        UNode* largestNode = findLargestNode(node->_left);
+        
+        // Swap largest node in left subtree w/ node
+        node->getDTree() = largestNode->getDTree();
+
+        // If largest node has a left child
+        if(largestNode->_left != nullptr){
+            DTree* childNode = largestNode->_left->getDTree();
+            // Shift left child into largest node
+            largestNode->getDTree() = childNode;
+            // Delete the child
+            delete childNode;
+
+        }
+
+    }
+
+}
+
+if(node->_left != nullptr){
+    // No left subtree
+    if(node->_left->_height <= 1){
+        // Right child exists
+        if(node->_right != nullptr){
+            // Shift right child into node
+            node->getDTree() = node->_right->getDTree();
+
+            // Delete right child
+            delete node->_right;
+        }
+    }
+}
+
+
+}
+
+UNode* UTree::findLargestNode(UNode* node){
+    if(node == nullptr) return nullptr;
+
+    if(node->_right == nullptr) return node;
+    return findLargestNode(node->_right);
+}
+
+
+DNode* UTree::recursiveRemoveUser(UNode* node, string username){
+    return nullptr;
+}
+
+
 
 /**
  * Retrieves a set of users within a UNode.
@@ -185,7 +299,13 @@ UNode* UTree::recursiveRetrieve(UNode* node, string username){
  * @return DNode with a matching username and discriminator, nullptr otherwise
  */
 DNode* UTree::retrieveUser(string username, int disc) {
-    return nullptr;
+    
+    UNode* userNode = retrieve(username);
+    if(!userNode){
+        return nullptr;
+    }
+
+    return userNode->getDTree()->retrieve(disc);
 }
 
 /**
@@ -194,7 +314,8 @@ DNode* UTree::retrieveUser(string username, int disc) {
  * @return number of users with the specified username
  */
 int UTree::numUsers(string username) {
-    return 0;
+    UNode* userNode = retrieve(username);
+    return userNode->getDTree()->getNumUsers();
 }
 
 /**
@@ -215,8 +336,18 @@ void UTree::recursiveClear(UNode* node){
  * Prints all accounts' details within every DTree.
  */
 void UTree::printUsers() const {
-
+    recursivePrintUsers(_root);
 }
+
+void UTree::recursivePrintUsers(UNode* node) const {
+    if(node == nullptr) return;
+    cout << "(";
+    recursivePrintUsers(node->_left);
+    node->getDTree()->printAccounts();
+    recursivePrintUsers(node->_right);
+    cout << ")";
+}
+
 
 /**
  * Dumps the UTree in the '()' notation.
@@ -235,17 +366,17 @@ void UTree::dump(UNode* node) const {
  * @param node UNode object in which the height will be updated
  */
 void UTree::updateHeight(UNode* node) {
-    
-    int nodeHeight = 0;
-    if(node->_left != nullptr){
-        nodeHeight += 1;
-    }
-    if(node->_right != nullptr){
-        nodeHeight += 1;
-    }
 
-    node->_height = nodeHeight;
-
+    // If node is a leaf, its height is one
+    if(node->_left == nullptr && node->_right == nullptr){
+        node->_height = 0;
+    }else if(node->_left == nullptr && node->_right != nullptr){
+        node->_height = node->_right->_height;
+    }else if(node->_left != nullptr && node->_right == nullptr){
+        node->_height = node->_left->_height;
+    }else if(node->_left != nullptr && node->_right != nullptr){
+        node->_height = node->_left->_height + node->_right->_height; 
+    }
 
 }
 
@@ -255,6 +386,29 @@ void UTree::updateHeight(UNode* node) {
  * @return (can change) returns true if an imbalance occured, false otherwise
  */
 int UTree::checkImbalance(UNode* node) {
+
+    if(node->_left == nullptr && node->_right == nullptr){
+        return 0;
+    }
+    
+    if(node->_left != nullptr && node->_right == nullptr){
+        return node->_left->_height >= 2;
+    }
+
+    if(node->_left == nullptr && node->_right != nullptr){
+        return node->_right->_height >= 2;
+    }
+
+
+    if(node->_left != nullptr && node->_right != nullptr){
+        return (node->_left->_height > node->_right->_height + 1 || node->_right->_height > node->_left->_height + 1);
+    }
+
+    
+
+    // if(nodeLeft > nodeRight + 1 || nodeRight > nodeLeft + 1){ return 1; }
+
+
     return 0;
 }
 

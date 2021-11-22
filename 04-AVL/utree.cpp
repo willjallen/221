@@ -327,9 +327,9 @@ void UTree::removeAVLNode(UNode* node){
         UNode* parentToLargestNodeInLeftSubtree = node;
         UNode* largestNodeInLeftSubtree = findLargestNode(leftNode, parentToLargestNodeInLeftSubtree);
         
-        cout << "Node: " << node->getUsername() << endl;
-        cout << "Largest Node: " << largestNodeInLeftSubtree->getUsername() << endl;
-        cout << "Parent to largest node: " << parentToLargestNodeInLeftSubtree->getUsername() << endl; 
+        // cout << "Node: " << node->getUsername() << endl;
+        // cout << "Largest Node: " << largestNodeInLeftSubtree->getUsername() << endl;
+        // cout << "Parent to largest node: " << parentToLargestNodeInLeftSubtree->getUsername() << endl; 
 
         UNode* leftChildOfLargestNodeInLeftSubtree = largestNodeInLeftSubtree->_left;
 
@@ -358,35 +358,35 @@ void UTree::removeAVLNode(UNode* node){
             // Nullify
             if(largestNodeInLeftSubtree->getUsername() < parentToLargestNodeInLeftSubtree->getUsername()){
                 parentToLargestNodeInLeftSubtree->_left = nullptr;
-                cout << "setting left" << endl;
+                // cout << "setting left" << endl;
             }
 
             if(largestNodeInLeftSubtree->getUsername() > parentToLargestNodeInLeftSubtree->getUsername()){
                 parentToLargestNodeInLeftSubtree->_right = nullptr;
-                cout << "setting right" << endl;
+                // cout << "setting right" << endl;
             }
             
             // Swap largest node in left subtree w/ node
-            cout << node->getDTree()->getUsername() << endl;
-            cout << largestNodeInLeftSubtree->getDTree()->getUsername() << endl;
+            // cout << node->getDTree()->getUsername() << endl;
+            // cout << largestNodeInLeftSubtree->getDTree()->getUsername() << endl;
 
             *(node->getDTree()) = *(largestNodeInLeftSubtree->getDTree());
-            cout << endl;
-            cout << node->getUsername() << endl;
+            // cout << endl;
+            // cout << node->getUsername() << endl;
 
-            cout << node << endl;
-            cout << parentToLargestNodeInLeftSubtree << endl;
-            cout << largestNodeInLeftSubtree << endl;
-            cout << endl;
+            // cout << node << endl;
+            // cout << parentToLargestNodeInLeftSubtree << endl;
+            // cout << largestNodeInLeftSubtree << endl;
+            // cout << endl;
 
-            // Delete the largest node
-            cout << parentToLargestNodeInLeftSubtree->_left << endl;
-            cout << parentToLargestNodeInLeftSubtree->_right << endl;
+            // // Delete the largest node
+            // cout << parentToLargestNodeInLeftSubtree->_left << endl;
+            // cout << parentToLargestNodeInLeftSubtree->_right << endl;
             delete largestNodeInLeftSubtree; // FIND WHAT FUCKING POINTS TO THIS THING WHAT THE FUCK
 
-            std::stringstream buffer;
-            dumpToString(buffer);
-            cout << endl;
+            // std::stringstream buffer;
+            // dumpToString(buffer);
+            // cout << endl;
 
             // Traverse and update
             updateAndRebalanceAlongPath(parentToLargestNodeInLeftSubtree->getUsername());
@@ -401,7 +401,7 @@ void UTree::removeAVLNode(UNode* node){
          
 
             // Shift right child into node 
-            node->getDTree() = rightNode->getDTree();
+            *(node->getDTree()) = *(rightNode->getDTree());
 
             // Delete right child
             delete rightNode;
@@ -508,11 +508,11 @@ void UTree::printUsers() const {
 
 void UTree::recursivePrintUsers(UNode* node) const {
     if(node == nullptr) return;
-    cout << "(";
     recursivePrintUsers(node->_left);
     node->getDTree()->printAccounts();
     recursivePrintUsers(node->_right);
-    cout << ")";
+    cout << endl;
+
 }
 
 
@@ -535,22 +535,22 @@ void UTree::dumpToString(std::stringstream& buffer) const {
 
 void UTree::dumpToString(UNode* node, std::stringstream& buffer) const {
     if(node == nullptr) return;
-    cout << "node: " << node->getUsername() << endl;
+    // cout << "node: " << node->getUsername() << endl;
 
-    cout << node->_left << endl;
-    cout << node->_right << endl;
+    // cout << node->_left << endl;
+    // cout << node->_right << endl;
 
-    if(node->_left){
-        cout << "left: " << node->_left->getUsername() << endl;
-    }else{
-        cout << "left: 0" << endl;
-    }
-    if(node->_right){
-        cout << "right: " << node->_right->getUsername() << endl;
-    }else{
-        cout << "right: 0" << endl;
-    }
-    cout << endl;
+    // if(node->_left){
+    //     cout << "left: " << node->_left->getUsername() << endl;
+    // }else{
+    //     cout << "left: 0" << endl;
+    // }
+    // if(node->_right){
+    //     cout << "right: " << node->_right->getUsername() << endl;
+    // }else{
+    //     cout << "right: 0" << endl;
+    // }
+    // cout << endl;
 
     buffer << "(";
     dumpToString(node->_left, buffer);

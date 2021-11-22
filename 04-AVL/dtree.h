@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
+#include <stdexcept>
 
 using std::cout;
 using std::endl;

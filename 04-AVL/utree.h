@@ -99,6 +99,8 @@ public:
     // UNode* rebalance(UNode* node);
     //----------------
 
+    void retrieveParent(string username, UNode*& node);
+    UNode* recursiveRetrieveParent(UNode* node, string username, UNode*& parent);
 
 private:
     UNode* _root;
@@ -109,7 +111,8 @@ private:
 
     void removeAVLNode(UNode* node);
     DNode* recursiveRemoveUser(UNode* node, string username);
-    UNode* findLargestNode(UNode* node);
+    UNode* findLargestNode(UNode* node, UNode*& parent);
+
 
     void rotateLeft(UNode*& node);
     void rotateRight(UNode*& node);

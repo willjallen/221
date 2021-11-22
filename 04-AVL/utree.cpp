@@ -216,7 +216,27 @@ void UTree::recursiveUpdateAlongPath(UNode* node, string username){
 
 
 
+void UTree::retrieveParent(string username, UNode*& parent){
+    recursiveRetrieveParent(_root, username, parent);
+}
 
+UNode* UTree::recursiveRetrieveParent(UNode* node, string username, UNode*& parent){
+    if(node == nullptr){
+        return nullptr;
+    }
+
+
+    if(username < node->getUsername()){
+        parent = node;
+        return recursiveRetrieveParent(node->_left, username, parent);
+    }
+    if(username > node->getUsername()){
+        parent = node;
+        return recursiveRetrieveParent(node->_right, username, parent);
+    }
+
+    return node;
+}
 
 
 /**
@@ -254,72 +274,115 @@ bool UTree::removeUser(string username, int disc, DNode*& removed) {
 
 
 void UTree::removeAVLNode(UNode* node){
-/*
-1. If the node to delete has a left subtree, locate the largest node in the left subtree. 
- This node will be referenced as node X moving forward. Node X can be found by traversing down
- to the left once and then as far right as possible. Copy node X’s value (DTree) into the node
- with the empty DTree. (Hint: you overloaded an operator to perform to help here).
+    /*
+    1. If the node to delete has a left subtree, locate the largest node in the left subtree. 
+     This node will be referenced as node X moving forward. Node X can be found by traversing down
+     to the left once and then as far right as possible. Copy node X’s value (DTree) into the node
+     with the empty DTree. (Hint: you overloaded an operator to perform to help here).
 
-2. If node X has a left child, the child will take node X’s place.
+    2. If node X has a left child, the child will take node X’s place.
 
-3. Delete node X and, if it exists, shift the left child into its spot. 
-This can also be done by copying node X’s child’s value into node X and deleting the child
-instead.
+    3. Delete node X and, if it exists, shift the left child into its spot. 
+    This can also be done by copying node X’s child’s value into node X and deleting the child
+    instead.
 
-4. On the way back up the path taken to find node X, check for imbalances. AHH HOW
+    4. On the way back up the path taken to find node X, check for imbalances. AHH HOW
 
-5.If the node with an empty DTree does not have a left subtree, shift its right child into
-its spot.
-*/
+    5.If the node with an empty DTree does not have a left subtree, shift its right child into
+    its spot.
+    */
+    UNode* leftNode = node->_left;
+    UNode* rightNode = node->_right;
+
+    // Is node a leaf?
+    if(!leftNode && !rightNode){
+        // Find parent
+        UNode* parent = nullptr;
+        retrieveParent(node->getUsername(), parent);
+        
+        // Nullify
+        if(node->getUsername() < parent->getUsername()){
+            parent->_left = nullptr;
+        }
+
+        if(node->getUsername() > parent->getUsername()){
+            parent->_right = nullptr;
+        }
+        
+        // Delete node
+        delete node;
 
 
-if(node->_left != nullptr){
+    
+        // Traverse and update
+        updateAndRebalanceAlongPath(parent->getUsername());
+
+    }
 
     // Does node have a left subtree
-    if(node->_left->_height > 1){
+    if(leftNode){
 
-        // Node X
-        UNode* largestNode = findLargestNode(node->_left);
+        // Find largest node in left subtree & capture parent
+        UNode* parent = node;
+        UNode* largestNode = findLargestNode(node->_left, parent);
         
         // Swap largest node in left subtree w/ node
         node->getDTree() = largestNode->getDTree();
 
         // If largest node has a left child
         if(largestNode->_left != nullptr){
-            DTree* childNode = largestNode->_left->getDTree();
             // Shift left child into largest node
-            largestNode->getDTree() = childNode;
+            largestNode->getDTree() = largestNode->_left->getDTree();
+            
             // Delete the child
-            delete childNode;
+            delete largestNode->_left;
 
+            // Nullify
+            largestNode->_left = nullptr;
+
+            // Traverse and update
+            updateAndRebalanceAlongPath(parent->getUsername());
+
+        }else{
+            // If largest node does not have left child
+            // Delete the largest node
+            delete largestNode;
+
+            // Nullify
+            parent->_right = nullptr;
+
+            // Traverse and update
+            updateAndRebalanceAlongPath(parent->getUsername());
+            
         }
 
-    }
-
-}
-
-if(node->_left != nullptr){
     // No left subtree
-    if(node->_left->_height <= 1){
-        // Right child exists
-        if(node->_right != nullptr){
-            // Shift right child into node
-            node->getDTree() = node->_right->getDTree();
+    }else if(rightNode){
+            // Find parent
+            UNode* parent = nullptr;
+            retrieveParent(node->getUsername(), parent);
+         
+
+            // Shift right child into node 
+            node->getDTree() = rightNode->getDTree();
 
             // Delete right child
-            delete node->_right;
+            delete rightNode;
+
+            // Nullify
+            node->_right = nullptr;
+
+
+            // Traverse and update
+            updateAndRebalanceAlongPath(node->getUsername());
         }
-    }
-}
-
 
 }
 
-UNode* UTree::findLargestNode(UNode* node){
-    if(node == nullptr) return nullptr;
-
+UNode* UTree::findLargestNode(UNode* node, UNode*& parent){
     if(node->_right == nullptr) return node;
-    return findLargestNode(node->_right);
+    parent = node;
+    return findLargestNode(node->_right, parent);
 }
 
 

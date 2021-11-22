@@ -568,8 +568,8 @@ void UTree::rebalance(UNode*& node) {
             // Double left rotation
             // Left then right
             // cout << "000" << endl;
-            rotateLeft(node->_left);
-            rotateRight(node);
+            rotateRight(rightNode);
+            rotateLeft(node);
             return;
         }
 
@@ -594,7 +594,7 @@ void UTree::rebalance(UNode*& node) {
             // Double right rotation
             // Right then left
             // cout << "111" << endl;
-            rotateLeft(node->_right);
+            rotateLeft(leftNode);
             rotateRight(node);
             return;
         }

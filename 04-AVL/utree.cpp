@@ -174,6 +174,7 @@ void UTree::updateAndRebalanceAlongPath(string username){
 void UTree::recursiveUpdateAndRebalanceAlongPath(UNode* node, string username){
     if(node == nullptr) return;
 
+    // cout << node->getUsername() << endl;
 
     if(username < node->getUsername()){
         recursiveUpdateAndRebalanceAlongPath(node->_left, username);
@@ -323,36 +324,72 @@ void UTree::removeAVLNode(UNode* node){
     if(leftNode){
 
         // Find largest node in left subtree & capture parent
-        UNode* parent = node;
-        UNode* largestNode = findLargestNode(node->_left, parent);
+        UNode* parentToLargestNodeInLeftSubtree = node;
+        UNode* largestNodeInLeftSubtree = findLargestNode(leftNode, parentToLargestNodeInLeftSubtree);
         
-        // Swap largest node in left subtree w/ node
-        node->getDTree() = largestNode->getDTree();
+        cout << "Node: " << node->getUsername() << endl;
+        cout << "Largest Node: " << largestNodeInLeftSubtree->getUsername() << endl;
+        cout << "Parent to largest node: " << parentToLargestNodeInLeftSubtree->getUsername() << endl; 
+
+        UNode* leftChildOfLargestNodeInLeftSubtree = largestNodeInLeftSubtree->_left;
 
         // If largest node has a left child
-        if(largestNode->_left != nullptr){
-            // Shift left child into largest node
-            largestNode->getDTree() = largestNode->_left->getDTree();
-            
-            // Delete the child
-            delete largestNode->_left;
+        if(leftChildOfLargestNodeInLeftSubtree){
+
+             // Swap largest node in left subtree w/ node
+            *(node->getDTree()) = *(largestNodeInLeftSubtree->getDTree());
+
+            // Copy left child into largest value
+            *(largestNodeInLeftSubtree->getDTree()) = *(leftChildOfLargestNodeInLeftSubtree->getDTree());
 
             // Nullify
-            largestNode->_left = nullptr;
+            largestNodeInLeftSubtree->_left = nullptr;
+            
+            // Delete the largest node
+            delete largestNodeInLeftSubtree->_left;
+
 
             // Traverse and update
-            updateAndRebalanceAlongPath(parent->getUsername());
+            updateAndRebalanceAlongPath(largestNodeInLeftSubtree->getUsername());
 
         }else{
-            // If largest node does not have left child
-            // Delete the largest node
-            delete largestNode;
+            // If largest node does not have left child (we know it doesn't have a right child since it is the largest)
 
             // Nullify
-            parent->_right = nullptr;
+            if(largestNodeInLeftSubtree->getUsername() < parentToLargestNodeInLeftSubtree->getUsername()){
+                parentToLargestNodeInLeftSubtree->_left = nullptr;
+                cout << "setting left" << endl;
+            }
+
+            if(largestNodeInLeftSubtree->getUsername() > parentToLargestNodeInLeftSubtree->getUsername()){
+                parentToLargestNodeInLeftSubtree->_right = nullptr;
+                cout << "setting right" << endl;
+            }
+            
+            // Swap largest node in left subtree w/ node
+            cout << node->getDTree()->getUsername() << endl;
+            cout << largestNodeInLeftSubtree->getDTree()->getUsername() << endl;
+
+            *(node->getDTree()) = *(largestNodeInLeftSubtree->getDTree());
+            cout << endl;
+            cout << node->getUsername() << endl;
+
+            cout << node << endl;
+            cout << parentToLargestNodeInLeftSubtree << endl;
+            cout << largestNodeInLeftSubtree << endl;
+            cout << endl;
+
+            // Delete the largest node
+            cout << parentToLargestNodeInLeftSubtree->_left << endl;
+            cout << parentToLargestNodeInLeftSubtree->_right << endl;
+            delete largestNodeInLeftSubtree; // FIND WHAT FUCKING POINTS TO THIS THING WHAT THE FUCK
+
+            std::stringstream buffer;
+            dumpToString(buffer);
+            cout << endl;
 
             // Traverse and update
-            updateAndRebalanceAlongPath(parent->getUsername());
+            updateAndRebalanceAlongPath(parentToLargestNodeInLeftSubtree->getUsername());
             
         }
 
@@ -498,6 +535,23 @@ void UTree::dumpToString(std::stringstream& buffer) const {
 
 void UTree::dumpToString(UNode* node, std::stringstream& buffer) const {
     if(node == nullptr) return;
+    cout << "node: " << node->getUsername() << endl;
+
+    cout << node->_left << endl;
+    cout << node->_right << endl;
+
+    if(node->_left){
+        cout << "left: " << node->_left->getUsername() << endl;
+    }else{
+        cout << "left: 0" << endl;
+    }
+    if(node->_right){
+        cout << "right: " << node->_right->getUsername() << endl;
+    }else{
+        cout << "right: 0" << endl;
+    }
+    cout << endl;
+
     buffer << "(";
     dumpToString(node->_left, buffer);
     buffer << node->getUsername() << ":" << node->getHeight() << ":" << node->getDTree()->getNumUsers();

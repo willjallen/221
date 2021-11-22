@@ -71,10 +71,11 @@ public:
     void dump() const {dump(_root);}
     void dump(UNode* node) const;
 
+
+    /* IMPLEMENT: "Helper" functions */
     void dumpToString(std::stringstream& buffer) const;
     void dumpToString(UNode* node, std::stringstream& buffer) const;
 
-    /* IMPLEMENT: "Helper" functions */
     bool recursiveInsert(UNode* node, Account newAcct);
 
     void updateAndRebalanceAlongPath(string username);

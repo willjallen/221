@@ -18,6 +18,7 @@ public:
     bool testBasicUTreeInsertSameUsername(UTree& utree);
     bool testBaiscUTreeRemove(UTree& utree);
 
+    void testUTreeLoadDataOnlyUsernames(UTree& utree);
     void UTreeLoadData(UTree& utree);
 
     bool testUTreeClear(UTree& utree);
@@ -25,6 +26,12 @@ public:
     bool testUTreeInsertIntoEmptyTree(UTree& utree);
     bool testUTreeDuplicateInsert(UTree& utree);
     bool testUTreeInsertIntoVacantNode(UTree& utree);
+
+    bool testUTreeInsertLeftRotation(UTree& utree);
+    bool testUTreeInsertRightRotation(UTree& utree);
+
+    bool testUTreeInsertLeftRightRotation(UTree& utree);
+    bool testUTReeInsertRightLeftRotation(UTree& utree);
     
     bool testUTreeRemoveNonExistentNode(UTree& utree);
     bool testUTreeRemoveVacantNode(UTree& utree);
@@ -113,8 +120,29 @@ bool Tester::testUTreeDuplicateInsert(UTree& utree){
     return !(utree.insert(newAcct));
 }
 
+void Tester::testUTreeLoadDataOnlyUsernames(UTree& utree){
+    utree.clear();
+    string* usernames = new string[8]{"Aqua5Seemly", "Brackle", "Capstan", "Cinnamon", "Pika", "Sulkyreal", "Allegator", "Kippage"};
+    Account newAcct = Account("", 0, 0, "", "");
+
+    for(int i = 0; i < 8; i++){
+        newAcct = Account(usernames[i], 0, 0 ,"","");
+        utree.insert(newAcct);
+    }
+
+    delete[] usernames;
+
+
+}
+
 void Tester::UTreeLoadData(UTree& utree){
+    utree.clear();
     utree.loadData("accounts.csv", false);
+    cout << "Expected:" << endl;
+    cout << "((((Allegator:0:16)Aqua5Seemly:1:22)Brackle:2:41(Capstan:0:18))Cinnamon:3:48((Kippage:0:22)Pika:1:25(Sulkyreal:0:8)))" << endl;
+    cout << "Result:" << endl;
+    utree.dump();
+    cout << endl;
 }
 
 bool Tester::testUTreeClear(UTree& utree){
@@ -132,23 +160,29 @@ bool Tester::testUTreeClear(UTree& utree){
 
 
 
-// bool Tester::testUTreeRemoveNonExistentNode(DTree& dtree){
-//     bool status = true;
+bool Tester::testUTreeRemoveNonExistentNode(UTree& utree){
+    bool status = true;
 
-//     dtree.clear();
-//     Account newAcct = Account("", 0, 0, "", "");
-//     if(!dtree.insert(newAcct)) status = false;
+    utree.clear();
+    Account newAcct = Account("hi", 0, 0, "", "");
+    if(!utree.insert(newAcct)) status = false;
 
-//     newAcct = Account("", 1, 0, "", "");
-//     if(!dtree.insert(newAcct)) status = false;
+    newAcct = Account("hi", 1, 0, "", "");
+    if(!utree.insert(newAcct)) status = false;
 
-//     newAcct = Account("", 2, 0, "", "");
-//     if(!dtree.insert(newAcct)) status = false;
-//     DNode* node;
-//     if(dtree.remove(3, node) != false) status = false;
+    newAcct = Account("kush", 69, 0, "", "");
+    if(!utree.insert(newAcct)) status = false;
+    
+    DNode* node;
+    if(utree.removeUser("poopoo", 3, node) != false) status = false;
 
-//     return status;
-// }
+    if(utree.removeUser("hi", 2, node) != false) status = false;
+
+    if(utree.removeUser("kush", 70, node) != false) status = false;
+
+
+    return status;
+}
 
 
 
@@ -160,31 +194,31 @@ int main() {
     // DTree dtree;
     UTree utree;
 
-    cout << "Testing UTree insertion w/ same username..." << endl;
-    if(tester.testBasicUTreeInsertSameUsername(utree)) {
-        cout << "test passed" << endl;
-    } else {
-        cout << "test failed" << endl;
-    }
+    // cout << "Testing UTree insertion w/ same username..." << endl;
+    // if(tester.testBasicUTreeInsertSameUsername(utree)) {
+    //     cout << "test passed" << endl;
+    // } else {
+    //     cout << "test failed" << endl;
+    // }
 
-    cout << "Resulting DTree:" << endl;
-    utree.dump();
-    cout << endl;
+    // cout << "Resulting DTree:" << endl;
+    // utree.dump();
+    // cout << endl;
 
 
-    cout << "\n\nTesting UTree insertion into empty tree..." << endl;
-    if(tester.testUTreeInsertIntoEmptyTree(utree)) {
-        cout << "test passed" << endl;
-    } else {
-        cout << "test failed" << endl;
-    }
+    // cout << "\n\nTesting UTree insertion into empty tree..." << endl;
+    // if(tester.testUTreeInsertIntoEmptyTree(utree)) {
+    //     cout << "test passed" << endl;
+    // } else {
+    //     cout << "test failed" << endl;
+    // }
 
-    cout << "\n\nTesting UTree duplicate insertion..." << endl;
-    if(tester.testUTreeDuplicateInsert(utree)) {
-        cout << "test passed" << endl;
-    } else {
-        cout << "test failed" << endl;
-    }
+    // cout << "\n\nTesting UTree duplicate insertion..." << endl;
+    // if(tester.testUTreeDuplicateInsert(utree)) {
+    //     cout << "test passed" << endl;
+    // } else {
+    //     cout << "test failed" << endl;
+    // }
 
     // cout << "\n\nTesting DTree deletion..." << endl;
     // if(tester.testBasicDTreeRemove(utree)) {
@@ -197,41 +231,45 @@ int main() {
     // dtree.dump();
     // cout << endl;
 
+    // cout << "\n\nUTree insertion only usernames..." << endl;
+    // tester.testUTreeLoadDataOnlyUsernames(utree);
+    // utree.dump();
+    // cout << endl;
+
+
     cout << "\n\nTesting UTree loadData..." << endl;
     tester.UTreeLoadData(utree);
-    utree.dump();
-    cout << endl;
 
 
-    cout << "\n\nTesting UTree clear..." << endl;
-    if(tester.testUTreeClear(utree)) {
+    // cout << "\n\nTesting UTree clear..." << endl;
+    // if(tester.testUTreeClear(utree)) {
+    //     cout << "test passed" << endl;
+    // } else {
+    //     cout << "test failed" << endl;
+    // }
+
+    // cout << "\n\nTesting DTree deletion..." << endl;
+    // if(tester.testBasicDTreeRemove(dtree)) {
+    //     cout << "test passed" << endl;
+    // } else {
+    //     cout << "test failed" << endl;
+    // }
+
+
+    // cout << "\n\nTesting DTree deletion..." << endl;
+    // if(tester.testBasicDTreeRemove(dtree)) {
+    //     cout << "test passed" << endl;
+    // } else {
+    //     cout << "test failed" << endl;
+    // }
+
+
+    cout << "\n\nTesting UTree remove non existent nodes..." << endl;
+    if(tester.testUTreeRemoveNonExistentNode(utree)) {
         cout << "test passed" << endl;
     } else {
         cout << "test failed" << endl;
     }
-
-    // cout << "\n\nTesting DTree deletion..." << endl;
-    // if(tester.testBasicDTreeRemove(dtree)) {
-    //     cout << "test passed" << endl;
-    // } else {
-    //     cout << "test failed" << endl;
-    // }
-
-
-    // cout << "\n\nTesting DTree deletion..." << endl;
-    // if(tester.testBasicDTreeRemove(dtree)) {
-    //     cout << "test passed" << endl;
-    // } else {
-    //     cout << "test failed" << endl;
-    // }
-
-
-    // cout << "\n\nTesting DTree deletion..." << endl;
-    // if(tester.testBasicDTreeRemove(dtree)) {
-    //     cout << "test passed" << endl;
-    // } else {
-    //     cout << "test failed" << endl;
-    // }
 
     // cout << "\n\nTesting DTree deletion..." << endl;
     // if(tester.testBasicDTreeRemove(dtree)) {

@@ -76,9 +76,20 @@ bool UTree::insert(Account newAcct) {
         return true;
     }
 
+    // Debug
+    // bool print = false;
+    // if(!retrieve(newAcct.getUsername())) print = true;
+
 
     if(recursiveInsert(_root, newAcct)){
-        updateAndRebalanceAlongPath(newAcct);
+        // updateAndRebalanceAlongPath(newAcct.getUsername());
+        // if(print){
+        //     cout << "dump: " << endl;
+        //     cout << newAcct.getUsername() << endl;
+        //     dump();
+        //     cout << endl;
+        // }
+
         return true;
     }
 
@@ -89,23 +100,30 @@ bool UTree::insert(Account newAcct) {
 
 bool UTree::recursiveInsert(UNode* node, Account newAcct){
     // cout << "here 1" << endl;
-    // cout << "account" << newAcct << endl;
+    // cout << "Account to insert: " << endl;
+    // cout << newAcct << endl;
+
+    // cout << "Current node" << endl;
+    // cout << node->getUsername() << endl;
+
     if(newAcct.getUsername() < node->getUsername()){
         if(node->_left != nullptr){
             return recursiveInsert(node->_left, newAcct);
         }else{
-            // Empty, insert
+            // Empty, insert new UNode
             UNode* newUNode = new UNode();
             node->_left = newUNode;
             // Add new account
-            if(newUNode->getDTree()->insert(newAcct)){
-                return true;
-            }else{
-                return false;
-            }
+            newUNode->getDTree()->insert(newAcct);
+            updateAndRebalanceAlongPath(newAcct.getUsername());
+            cout << "dump: " << endl;
+            cout << newAcct.getUsername() << endl;
+            dump();
+            cout << endl;
+            return true;
         }
     }
-
+    // cout << "here 2" << endl;
     if(newAcct.getUsername() > node->getUsername()){
         if(node->_right != nullptr){
             return recursiveInsert(node->_right, newAcct);
@@ -114,16 +132,26 @@ bool UTree::recursiveInsert(UNode* node, Account newAcct){
             UNode* newUNode = new UNode();
             node->_right = newUNode;
             // Add new account
-            if(newUNode->getDTree()->insert(newAcct)){
-                return true;
-            }else{
-                return false;
-            }
+            newUNode->getDTree()->insert(newAcct);
+            cout << newAcct.getUsername() << endl;
+            
+            cout << "Before insertion & rebalance: " << endl;
+            dump();
+            cout << endl;
+            
+            updateAndRebalanceAlongPath(newAcct.getUsername());
+            
+            cout << "After insertion & rebalance: " << endl;
+            dump();
+            cout << endl;
+            cout << endl;
+            return true;
         }
     }
-    
+    // cout << "here 3" << endl;
     // Found match
     // Add new account to DTree
+    // cout << "should insert here" << endl;
     if(node->getDTree()->insert(newAcct)){
         return true;
     }
@@ -137,21 +165,21 @@ bool UTree::recursiveInsert(UNode* node, Account newAcct){
 
 }
 
-void UTree::updateAndRebalanceAlongPath(Account acct){
+void UTree::updateAndRebalanceAlongPath(string username){
 
-    recursiveUpdateAndRebalanceAlongPath(_root, acct);
+    recursiveUpdateAndRebalanceAlongPath(_root, username);
 
 }
 
-void UTree::recursiveUpdateAndRebalanceAlongPath(UNode* node, Account acct){
+void UTree::recursiveUpdateAndRebalanceAlongPath(UNode* node, string username){
     if(node == nullptr) return;
 
 
-    if(acct.getUsername() < node->getUsername()){
-        recursiveUpdateAndRebalanceAlongPath(node->_left, acct);
+    if(username < node->getUsername()){
+        recursiveUpdateAndRebalanceAlongPath(node->_left, username);
     }
-    if(acct.getUsername() > node->getUsername()){
-        recursiveUpdateAndRebalanceAlongPath(node->_right, acct);
+    if(username > node->getUsername()){
+        recursiveUpdateAndRebalanceAlongPath(node->_right, username);
     }
 
     updateAndRebalance(node);
@@ -159,13 +187,34 @@ void UTree::recursiveUpdateAndRebalanceAlongPath(UNode* node, Account acct){
 
 }
 
-
 void UTree::updateAndRebalance(UNode* node){
+
     updateHeight(node);
-    if(checkImbalance(node)){
+    if(checkImbalance(node) == 1){
         rebalance(node);
     }
 }
+
+void UTree::updateAlongPath(string username){
+    recursiveUpdateAlongPath(_root, username);
+}
+
+void UTree::recursiveUpdateAlongPath(UNode* node, string username){
+    if(node == nullptr) return;
+
+
+    if(username < node->getUsername()){
+        recursiveUpdateAlongPath(node->_left, username);
+    }
+    if(username > node->getUsername()){
+        recursiveUpdateAlongPath(node->_right, username);
+    }
+
+    updateHeight(node);
+}
+
+
+
 
 
 
@@ -199,7 +248,7 @@ bool UTree::removeUser(string username, int disc, DNode*& removed) {
     }
 
 
-    return false;
+    return true;
 
 }
 
@@ -228,6 +277,8 @@ if(node->_left != nullptr){
 
     // Does node have a left subtree
     if(node->_left->_height > 1){
+
+        // Node X
         UNode* largestNode = findLargestNode(node->_left);
         
         // Swap largest node in left subtree w/ node
@@ -377,21 +428,42 @@ void UTree::dump(UNode* node) const {
     cout << ")";
 }
 
+
+void UTree::dumpToString(std::stringstream& str) const {
+    dumpToString(_root, str);
+}
+
+void UTree::dumpToString(UNode* node, std::stringstream& buffer) const {
+    if(node == nullptr) return;
+    buffer << "(";
+    dump(node->_left);
+    buffer << node->getUsername() << ":" << node->getHeight() << ":" << node->getDTree()->getNumUsers();
+    dump(node->_right);
+    buffer << ")";
+}
+
+
 /**
  * Updates the height of the specified node.
  * @param node UNode object in which the height will be updated
  */
 void UTree::updateHeight(UNode* node) {
 
-    // If node is a leaf, its height is one
+    // If node is a leaf, its height is 0
     if(node->_left == nullptr && node->_right == nullptr){
         node->_height = 0;
-    }else if(node->_left == nullptr && node->_right != nullptr){
-        node->_height = node->_right->_height;
-    }else if(node->_left != nullptr && node->_right == nullptr){
-        node->_height = node->_left->_height;
-    }else if(node->_left != nullptr && node->_right != nullptr){
-        node->_height = node->_left->_height + node->_right->_height; 
+    }
+    
+    else if(node->_left == nullptr && node->_right != nullptr){
+        node->_height = 1 + node->_right->_height;
+    }
+    
+    else if(node->_left != nullptr && node->_right == nullptr){
+        node->_height = 1 + node->_left->_height;
+    }
+    
+    else if(node->_left != nullptr && node->_right != nullptr){
+        node->_height = 1 + std::max(node->_left->_height, node->_right->_height); 
     }
 
 }
@@ -403,16 +475,31 @@ void UTree::updateHeight(UNode* node) {
  */
 int UTree::checkImbalance(UNode* node) {
 
+
     if(node->_left == nullptr && node->_right == nullptr){
         return 0;
     }
     
     if(node->_left != nullptr && node->_right == nullptr){
-        return node->_left->_height >= 2;
+        return node->_left->_height >= 1;
     }
 
     if(node->_left == nullptr && node->_right != nullptr){
-        return node->_right->_height >= 2;
+        // cout << "should be here" << endl;
+        // cout << endl;
+        // if(node->getUsername() == "Capstan"){
+        //     cout << "here(Captsan)" << endl;
+        //     cout << "Capstan height: " <<endl;
+        //     cout << node->_height << endl;
+        //     cout << "Capstain->_right height (Cinnamon)" << endl;
+        //     cout << node->_right->_height << endl;
+        //     cout << "node->_right->_height >= 1" << endl;
+        //     cout << (node->_right->_height >= 1) << endl;
+        //     cout << endl;
+        //     dump();
+        //     cout << endl;
+        // }
+        return node->_right->_height >= 1;
     }
 
 
@@ -431,135 +518,234 @@ int UTree::checkImbalance(UNode* node) {
 void UTree::rebalance(UNode*& node) {
     // Rebalance happens when abs(node_left_size - node_left_size) > 2
     // 4 cases
+    // cout << "???" << endl;
 
+    UNode* leftNode = node->_left;
+    UNode* rightNode = node->_right;
 
+    int leftNodeHeight = (leftNode == nullptr ? -1 : leftNode->_height);
+    int rightNodeHeight = (rightNode == nullptr ? -1 : rightNode->_height);
 
+    // Left subtree
+    UNode* leftOfLeftNode = nullptr;
+    UNode* rightOfLeftNode = nullptr;
 
-    // GP(node) -> left -> left
-    // In this case the tree is left heavy, so we do a right rotation
-    if(node->_left != nullptr){
-        if(node->_left->_left != nullptr){
-            rotateRight(node);
-        }
+    // Right subtree
+    UNode* rightOfRightNode = nullptr;
+    UNode* leftOfRightNode = nullptr;
+
+    if(leftNode != nullptr){
+        leftOfLeftNode = leftNode->_left;
+        rightOfLeftNode = leftNode->_right;
     }
 
-
-    // GP(node) -> right -> right
-    // In this case the tree is right heavy, so we do a left rotation
-    if(node->_right != nullptr){
-        if(node->_right->_right != nullptr){
-            rotateLeft(node);
-        }
+    if(rightNode != nullptr){
+        rightOfRightNode = rightNode->_right;
+        leftOfRightNode = rightNode->_left;
     }
 
-    // GP(node) -> left -> right
-    // In this case we must first do a left rotation w/ left node as root, then a right rotation with top node as root
-    if(node->_left != nullptr){
-        if(node->_left->_right != nullptr){
+    int leftOfLeftNodeHeight = (leftOfLeftNode == nullptr ? -1 : leftOfLeftNode->_height);
+    int rightOfLeftNodeHeight = (rightOfLeftNode == nullptr ? -1 : rightOfLeftNode->_height);
+
+    int rightOfRightNodeHeight = (rightOfRightNode == nullptr ? -1 : rightOfRightNode->_height);
+    int leftOfRightNodeHeight = (leftOfRightNode == nullptr ? -1 : leftOfRightNode->_height);
+
+
+    cout << endl;
+    cout << "=====================" << endl;
+    cout << "Rebalance: " << node->getUsername() << endl;
+    cout << "Left | Right : " << leftNodeHeight << " | " << rightNodeHeight << endl; 
+    cout << endl;
+
+    // Tree is right heavy
+    if(rightNodeHeight > leftNodeHeight + 1){
+        cout << "Tree is right heavy" << endl;
+        cout << "Right subtree:" << endl;
+        cout << "Left | Right : " << leftOfRightNodeHeight << " | " << rightOfRightNodeHeight << endl; 
+        // Right subtree is left heavy
+        if(leftOfRightNodeHeight > rightOfRightNodeHeight){
+            cout << "Right subtree is left heavy" << endl;
+            // Double left rotation
+            // Left then right
+            // cout << "000" << endl;
             rotateLeft(node->_left);
-            rotateRight(node);            
+            rotateRight(node);
+            return;
         }
-    }
+
+        if(rightOfRightNodeHeight > leftOfRightNodeHeight){
+            cout << "Right subtree is right heavy" << endl;
+        // Right subtree is right heavy
+            // Single left rotation
+            rotateLeft(node);
+            return;
+        }
 
 
-    // GP(node) -> right -> left
-    // In this case we must first do a rught rotation w/ right node as root, then a left rotation with top node as root
-    if(node->_right != nullptr){
-        if(node->_right->_left != nullptr){
-            rotateRight(node->_right);
-            rotateRight(node);              
+    }
+
+    // Tree is left heavy
+    if(leftNodeHeight > rightNodeHeight + 1){
+        cout << "Tree is right heavy" << endl;
+
+        // Left subtree is right heavy
+        if(rightOfLeftNodeHeight > leftOfLeftNodeHeight){
+            cout << "Left subtree is right heavy" << endl;
+            // Double right rotation
+            // Right then left
+            // cout << "111" << endl;
+            rotateLeft(node->_right);
+            rotateRight(node);
+            return;
+        }
+
+        if(leftOfLeftNodeHeight > rightOfRightNodeHeight){
+            cout << "Left subtree is left heavy" << endl;
+        // Left subtree is left heavy
+            // Single right rotation
+            // cout << "hereZ" << endl;
+            rotateRight(node);
+            return;
         }
     }
+    cout << "=====================" << endl;
+    cout << endl;
+
+    // // If tree is left heavy
+    // if(node->_left != nullptr){
+    //     UNode* leftNode = node->_left;
+
+    //     if(node->_right == nullptr){
+    //         // Left subtree is left heavy
+    //         // Single right rotation
+    //     }
+    // }
+
+    // // GP(node) -> left -> left
+    // // In this case the tree is left heavy, so we do a right rotation
+    // if(node->_left != nullptr){
+    //     if(node->_left->_left != nullptr){
+    //         rotateRight(node);
+
+    // }
+
+
+    // // GP(node) -> right -> right
+    // // In this case the tree is right heavy, so we do a left rotation
+    // if(node->_right != nullptr){
+    //     if(node->_right->_right != nullptr){
+    //         rotateLeft(node);
+    //     }
+    // }
+
+    // // GP(node) -> left -> right
+    // // In this case we must first do a left rotation w/ left node as root, then a right rotation with top node as root
+    // if(node->_left != nullptr){
+    //     if(node->_left->_right != nullptr){
+    //         rotateLeft(node->_left);
+    //         rotateRight(node);            
+    //     }
+    // }
+
+
+    // // GP(node) -> right -> left
+    // // In this case we must first do a rught rotation w/ right node as root, then a left rotation with top node as root
+    // if(node->_right != nullptr){
+    //     if(node->_right->_left != nullptr){
+    //         rotateRight(node->_right);
+    //         rotateRight(node);              
+    //     }
+    // }
 
 }
 
 
 void UTree::rotateLeft(UNode*& rootNode){
-/*
-    root
-    /  \
-    A   pivot
-        / \
-        B  C
+    /*
+        root
+        /  \
+        A   pivot
+            / \
+            B  C
 
 
-    to
- 
-        pivot
-        /   \
-     root    C   
-     / \   
-    a   b   
+        to
+     
+            pivot
+            /   \
+         root    C   
+         / \   
+        a   b   
 
-*/
+    */
 
-UNode* pivot = rootNode->_right;
+    UNode* pivot = rootNode->_right;
 
-UNode* A = rootNode->_left;
-UNode* B = pivot->_left;
-UNode* C = pivot->_right;
-
-
-// Swap pivot with root
-DTree* swapTree = rootNode->getDTree();
-rootNode->getDTree() = pivot->getDTree();
-pivot->getDTree() = swapTree;
-
-// Update subtree connections
-rootNode->_left = pivot;
-
-rootNode->_right = C;
-pivot->_left = A;
-pivot->_right = B;
+    UNode* A = rootNode->_left;
+    UNode* B = pivot->_left;
+    UNode* C = pivot->_right;
 
 
+    // Swap pivot with root
+    DTree* swapTree = rootNode->getDTree();
+    rootNode->getDTree() = pivot->getDTree();
+    pivot->getDTree() = swapTree;
 
+    // Update subtree connections
+    rootNode->_left = pivot;
+
+    rootNode->_right = C;
+    // cout << "problem?1" << endl;
+    pivot->_left = A;
+    pivot->_right = B;
+
+    // Update heights
+    updateAlongPath(pivot->getUsername());
 
 }
 
 void UTree::rotateRight(UNode*& rootNode){
-/*
-            root
-            /  \
-         pivot  A
-          / \  
-         C  B
+    /*
+                root
+                /  \
+             pivot  A
+              / \  
+             C  B
 
 
-               
-            to
+                   
+                to
 
-        pivot
-        /   \
-      C    root   
-            /  \
-            B   A
+            pivot
+            /   \
+          C    root   
+                /  \
+                B   A
 
-*/
+    */
 
-UNode* pivot = rootNode->_left;
+    UNode* pivot = rootNode->_left;
 
-UNode* A = rootNode->_right;
-UNode* B = pivot->_right;
-UNode* C = pivot->_left;
+    cout << "pivot: " << pivot << endl;
 
-
-// Swap pivot with root
-DTree* swapTree = rootNode->getDTree();
-rootNode->getDTree() = pivot->getDTree();
-pivot->getDTree() = swapTree;
-
-// Update subtree connections
-rootNode->_right = pivot;
-
-rootNode->_left = C;
-pivot->_right = A;
-pivot->_left = B;
+    UNode* A = rootNode->_right;
+    UNode* B = pivot->_right;
+    UNode* C = pivot->_left;
 
 
+    // Swap pivot with root
+    DTree* swapTree = rootNode->getDTree();
+    rootNode->getDTree() = pivot->getDTree();
+    pivot->getDTree() = swapTree;
 
+    // Update subtree connections
+    rootNode->_right = pivot;
+    // cout << "problem?2" << endl;
+    rootNode->_left = C;
+    pivot->_right = A;
+    pivot->_left = B;
 
-
+    updateAlongPath(pivot->getUsername());
 
 }
 

@@ -71,14 +71,21 @@ public:
     void dump() const {dump(_root);}
     void dump(UNode* node) const;
 
+    void dumpToString(std::stringstream& buffer) const;
+    void dumpToString(UNode* node, std::stringstream& buffer) const;
 
     /* IMPLEMENT: "Helper" functions */
     bool recursiveInsert(UNode* node, Account newAcct);
 
-    void updateAndRebalanceAlongPath(Account acct);
-    void recursiveUpdateAndRebalanceAlongPath(UNode* node, Account acct);
+    void updateAndRebalanceAlongPath(string username);
+    void recursiveUpdateAndRebalanceAlongPath(UNode* node, string username);
     
+    void updateAlongPath(string username);
+    void recursiveUpdateAlongPath(UNode* node, string username);
+
+
     void updateAndRebalance(UNode* node);
+
     
     UNode* recursiveInsert(UNode* node, string username);
     UNode* recursiveRetrieve(UNode* node, string username);
@@ -92,11 +99,13 @@ public:
     // UNode* rebalance(UNode* node);
     //----------------
 
+
 private:
     UNode* _root;
 
 
     void recursivePrintUsers(UNode* node) const;
+
 
     void removeAVLNode(UNode* node);
     DNode* recursiveRemoveUser(UNode* node, string username);

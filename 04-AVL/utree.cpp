@@ -429,16 +429,16 @@ void UTree::dump(UNode* node) const {
 }
 
 
-void UTree::dumpToString(std::stringstream& str) const {
-    dumpToString(_root, str);
+void UTree::dumpToString(std::stringstream& buffer) const {
+    dumpToString(_root, buffer);
 }
 
 void UTree::dumpToString(UNode* node, std::stringstream& buffer) const {
     if(node == nullptr) return;
     buffer << "(";
-    dump(node->_left);
+    dumpToString(node->_left, buffer);
     buffer << node->getUsername() << ":" << node->getHeight() << ":" << node->getDTree()->getNumUsers();
-    dump(node->_right);
+    dumpToString(node->_right, buffer);
     buffer << ")";
 }
 

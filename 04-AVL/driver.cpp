@@ -138,12 +138,26 @@ void Tester::testUTreeLoadDataOnlyUsernames(UTree& utree){
 void Tester::UTreeLoadData(UTree& utree){
     utree.clear();
     utree.loadData("accounts.csv", false);
+
+    string expectedVal = "((((Allegator:0:16)Aqua5Seemly:1:22)Brackle:2:41(Capstan:0:18))Cinnamon:3:48((Kippage:0:22)Pika:1:25(Sulkyreal:0:8)))"
+
     cout << "Expected:" << endl;
-    cout << "((((Allegator:0:16)Aqua5Seemly:1:22)Brackle:2:41(Capstan:0:18))Cinnamon:3:48((Kippage:0:22)Pika:1:25(Sulkyreal:0:8)))" << endl;
+    cout << expectedVal << endl;
     cout << "Result:" << endl;
-    utree.dump();
+
+    std::stringstream buffer;
+    utree.dumpToString(buffer);
+    cout << buffer.str() << endl;
     cout << endl;
+
+    if(buffer.str() == expectedVal) return true;
+    return false;
 }
+
+bool Tester::testUTreeInsertLeftRotation(UTree& utree){
+    return false;
+}
+
 
 bool Tester::testUTreeClear(UTree& utree){
     UTreeLoadData(utree);

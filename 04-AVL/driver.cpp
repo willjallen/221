@@ -47,6 +47,7 @@ public:
 
     bool testUTreeGeneralAVLRemoveOne(UTree& utree);
     bool testUTreeGeneralAVLRemoveTwo(UTree& utree);
+    bool testUTreeGeneralAVLRemoveThree(UTree& utree);
 
     bool testUTreeBalanced(UTree& utree);
 
@@ -522,6 +523,54 @@ bool Tester::testUTreeGeneralAVLRemoveTwo(UTree& utree){
 
 }
 
+bool Tester::testUTreeGeneralAVLRemoveThree(UTree& utree){
+    utree.clear();
+
+
+    string expectedValOne = "";
+    string expectedVal = "(((A:0:1)B:1:1(D:0:1))I:2:1((M:0:1)O:1:1(R:0:1)))";    
+
+
+    string* usernames = new string[19]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S"};
+    Account newAcct = Account("", 0, 0, "", "");
+
+    for(int i = 0; i < 19; i++){
+        newAcct = Account(usernames[i], 0, 0 ,"","");
+        utree.insert(newAcct);
+    }
+
+    delete[] usernames;
+
+    DNode* removed = nullptr;
+    utree.removeUser("H", 0, removed);
+    utree.removeUser("P", 0, removed);
+    utree.removeUser("N", 0, removed);
+    utree.removeUser("J", 0, removed);
+    utree.removeUser("F", 0, removed);
+    utree.removeUser("G", 0, removed);
+    utree.removeUser("S", 0, removed);
+    utree.removeUser("E", 0, removed);
+    utree.removeUser("Q", 0, removed);
+    utree.removeUser("K", 0, removed);
+    utree.removeUser("L", 0, removed);
+    utree.removeUser("C", 0, removed);
+
+
+
+
+    cout << "Expected:" << endl;
+    cout << expectedVal << endl;
+    cout << "Result:" << endl;
+
+    std::stringstream buffer;
+    utree.dumpToString(buffer);
+    cout << buffer.str() << endl;
+
+    if(buffer.str() == expectedVal) return true;
+    return false;  
+
+}
+
 bool Tester::testUTreeBalanced(UTree& utree){
     utree.clear();
 
@@ -646,57 +695,64 @@ int main() {
 
     /* === Deletion Stuff === */
     {
-        // cout << "\n\nTesting UTree remove account..." << endl;
-        // if(tester.testUTreeRemoveAccount(utree)) {
-        //     cout << "test passed" << endl;
-        // } else {
-        //     cout << "test failed" << endl;
-        // }
+        cout << "\n\nTesting UTree remove account..." << endl;
+        if(tester.testUTreeRemoveAccount(utree)) {
+            cout << "test passed" << endl;
+        } else {
+            cout << "test failed" << endl;
+        }
 
-        // cout << "\n\nTesting UTree remove non existent nodes..." << endl;
-        // if(tester.testUTreeRemoveNonExistentNode(utree)) {
-        //     cout << "test passed" << endl;
-        // } else {
-        //     cout << "test failed" << endl;
-        // }
+        cout << "\n\nTesting UTree remove non existent nodes..." << endl;
+        if(tester.testUTreeRemoveNonExistentNode(utree)) {
+            cout << "test passed" << endl;
+        } else {
+            cout << "test failed" << endl;
+        }
 
-        // cout << "\n\nTesting UTree remove AVL leaf node..." << endl;
-        // if(tester.testUTreeRemoveAVLNodeLeaf(utree)) {
-        //     cout << "test passed" << endl;
-        // } else {
-        //     cout << "test failed" << endl;
-        // }
+        cout << "\n\nTesting UTree remove AVL leaf node..." << endl;
+        if(tester.testUTreeRemoveAVLNodeLeaf(utree)) {
+            cout << "test passed" << endl;
+        } else {
+            cout << "test failed" << endl;
+        }
 
-        // cout << "\n\nTesting UTree remove AVL node w/ left subtree & child..." << endl;
-        // if(tester.testUTreeRemoveAVLNodeLeftSubtreeWithChild(utree)) {
-        //     cout << "test passed" << endl;
-        // } else {
-        //     cout << "test failed" << endl;
-        // }
+        cout << "\n\nTesting UTree remove AVL node w/ left subtree & child..." << endl;
+        if(tester.testUTreeRemoveAVLNodeLeftSubtreeWithChild(utree)) {
+            cout << "test passed" << endl;
+        } else {
+            cout << "test failed" << endl;
+        }
 
-        // cout << "\n\nTesting UTree remove AVL node w/ left subtree & no child..." << endl;
-        // if(tester.testUTreeRemoveAVLNodeLeftSubtreeWithNoChild(utree)) {
-        //     cout << "test passed" << endl;
-        // } else {
-        //     cout << "test failed" << endl;
-        // }
+        cout << "\n\nTesting UTree remove AVL node w/ left subtree & no child..." << endl;
+        if(tester.testUTreeRemoveAVLNodeLeftSubtreeWithNoChild(utree)) {
+            cout << "test passed" << endl;
+        } else {
+            cout << "test failed" << endl;
+        }
 
-        // cout << "\n\nTesting UTree remove AVL node w/ right subtree..." << endl;
-        // if(tester.testUTreeRemoveAVLNodeRightSubtree(utree)) {
-        //     cout << "test passed" << endl;
-        // } else {
-        //     cout << "test failed" << endl;
-        // }
+        cout << "\n\nTesting UTree remove AVL node w/ right subtree..." << endl;
+        if(tester.testUTreeRemoveAVLNodeRightSubtree(utree)) {
+            cout << "test passed" << endl;
+        } else {
+            cout << "test failed" << endl;
+        }
 
-        // cout << "\n\nTesting UTree remove AVL general one..." << endl;
-        // if(tester.testUTreeGeneralAVLRemoveOne(utree)) {
-        //     cout << "test passed" << endl;
-        // } else {
-        //     cout << "test failed" << endl;
-        // }
+        cout << "\n\nTesting UTree remove AVL general one..." << endl;
+        if(tester.testUTreeGeneralAVLRemoveOne(utree)) {
+            cout << "test passed" << endl;
+        } else {
+            cout << "test failed" << endl;
+        }
 
         cout << "\n\nTesting UTree remove AVL general two..." << endl;
         if(tester.testUTreeGeneralAVLRemoveTwo(utree)) {
+            cout << "test passed" << endl;
+        } else {
+            cout << "test failed" << endl;
+        }
+
+        cout << "\n\nTesting UTree remove AVL general three..." << endl;
+        if(tester.testUTreeGeneralAVLRemoveThree(utree)) {
             cout << "test passed" << endl;
         } else {
             cout << "test failed" << endl;

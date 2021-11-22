@@ -391,22 +391,22 @@ void UTree::removeAVLNode(UNode* node){
             // Traverse and update
             // updateHeight(parentToLargestNodeInLeftSubtree);
 
-            dump();
-            cout << endl;
-            cout << parentToLargestNodeInLeftSubtree->getUsername() << endl;
+            // dump();
+            // cout << endl;
+            // cout << parentToLargestNodeInLeftSubtree->getUsername() << endl;
             updateAndRebalanceAlongPath(parentToLargestNodeInLeftSubtree->getUsername());
             
         }
 
     // No left subtree
     }else if(rightNode){
-        dump();
-        cout << endl;
-            cout << node->getUsername() << endl;
-            cout << node->_right->getUsername() << endl;
-            UNode* parentNode;
-            retrieveParent("I", parentNode);
-            cout << parentNode->getUsername() << endl;
+        // dump();
+        // cout << endl;
+        //     cout << node->getUsername() << endl;
+        //     cout << node->_right->getUsername() << endl;
+        //     UNode* parentNode;
+        //     retrieveParent("I", parentNode);
+        //     cout << parentNode->getUsername() << endl;
             // Find parent
             // UNode* parent = nullptr;
             // retrieveParent(node->getUsername(), parent);
@@ -598,12 +598,6 @@ void UTree::updateHeight(UNode* node) {
         node->_height = 1 + std::max(node->_left->_height, node->_right->_height); 
     }
 
-    if(node->getUsername() == "I"){
-        cout << "here" << endl;
-        cout << node->_left << endl;
-        cout << node->_right << endl;
-        cout << node->_height << endl;
-    }
 
 }
 
@@ -624,24 +618,6 @@ int UTree::checkImbalance(UNode* node) {
     }
 
     if(node->_left == nullptr && node->_right != nullptr){
-        // cout << "should be here" << endl;
-        // cout << endl;
-        // if(node->getUsername() == "Capstan"){
-        //     cout << "here(Captsan)" << endl;
-        //     cout << "Capstan height: " <<endl;
-        //     cout << node->_height << endl;
-        //     cout << "Capstain->_right height (Cinnamon)" << endl;
-        //     cout << node->_right->_height << endl;
-        //     cout << "node->_right->_height >= 1" << endl;
-        //     cout << (node->_right->_height >= 1) << endl;
-        //     cout << endl;
-        //     dump();
-        //     cout << endl;
-        // }
-        if(node->getUsername() == "I"){
-            cout << "here2" << endl;
-            cout << node->_right->_height << endl;
-        }
         return node->_right->_height >= 1;
     }
 
@@ -715,12 +691,6 @@ void UTree::rebalance(UNode*& node) {
             rotateLeft(node);
             return;
         }else{
-                if(node->getUsername() == "I"){
-        cout << "here" << endl;
-        cout << node->_left << endl;
-        cout << node->_right << endl;
-        cout << node->_height << endl;
-    }
             // cout << "Right subtree is right heavy" << endl;
         // Right subtree is right heavy
             // Single left rotation

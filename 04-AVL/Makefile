@@ -25,5 +25,6 @@ run:
 
 clean:
 		rm driver.o
+		rm dtree.o
 		rm utree.o
 		rm *.out

@@ -346,7 +346,7 @@ void UTree::removeAVLNode(UNode* node){
             largestNodeInLeftSubtree->_left = nullptr;
             
             // Delete the largest node
-            delete largestNodeInLeftSubtree->_left;
+            delete leftChildOfLargestNodeInLeftSubtree;
 
 
             // Traverse and update
@@ -382,32 +382,47 @@ void UTree::removeAVLNode(UNode* node){
             // // Delete the largest node
             // cout << parentToLargestNodeInLeftSubtree->_left << endl;
             // cout << parentToLargestNodeInLeftSubtree->_right << endl;
-            delete largestNodeInLeftSubtree; // FIND WHAT FUCKING POINTS TO THIS THING WHAT THE FUCK
+            delete largestNodeInLeftSubtree; 
 
             // std::stringstream buffer;
             // dumpToString(buffer);
             // cout << endl;
 
             // Traverse and update
+            // updateHeight(parentToLargestNodeInLeftSubtree);
+
+            dump();
+            cout << endl;
+            cout << parentToLargestNodeInLeftSubtree->getUsername() << endl;
             updateAndRebalanceAlongPath(parentToLargestNodeInLeftSubtree->getUsername());
             
         }
 
     // No left subtree
     }else if(rightNode){
+        dump();
+        cout << endl;
+            cout << node->getUsername() << endl;
+            cout << node->_right->getUsername() << endl;
+            UNode* parentNode;
+            retrieveParent("I", parentNode);
+            cout << parentNode->getUsername() << endl;
             // Find parent
-            UNode* parent = nullptr;
-            retrieveParent(node->getUsername(), parent);
+            // UNode* parent = nullptr;
+            // retrieveParent(node->getUsername(), parent);
          
 
             // Shift right child into node 
             *(node->getDTree()) = *(rightNode->getDTree());
 
-            // Delete right child
-            delete rightNode;
+            cout << node->getUsername() << endl;
 
             // Nullify
             node->_right = nullptr;
+
+            // Delete right child
+            delete rightNode;
+
 
 
             // Traverse and update
@@ -583,6 +598,13 @@ void UTree::updateHeight(UNode* node) {
         node->_height = 1 + std::max(node->_left->_height, node->_right->_height); 
     }
 
+    if(node->getUsername() == "I"){
+        cout << "here" << endl;
+        cout << node->_left << endl;
+        cout << node->_right << endl;
+        cout << node->_height << endl;
+    }
+
 }
 
 /**
@@ -616,6 +638,10 @@ int UTree::checkImbalance(UNode* node) {
         //     dump();
         //     cout << endl;
         // }
+        if(node->getUsername() == "I"){
+            cout << "here2" << endl;
+            cout << node->_right->_height << endl;
+        }
         return node->_right->_height >= 1;
     }
 
@@ -688,9 +714,13 @@ void UTree::rebalance(UNode*& node) {
             rotateRight(rightNode);
             rotateLeft(node);
             return;
-        }
-
-        if(rightOfRightNodeHeight > leftOfRightNodeHeight){
+        }else{
+                if(node->getUsername() == "I"){
+        cout << "here" << endl;
+        cout << node->_left << endl;
+        cout << node->_right << endl;
+        cout << node->_height << endl;
+    }
             // cout << "Right subtree is right heavy" << endl;
         // Right subtree is right heavy
             // Single left rotation
@@ -714,9 +744,7 @@ void UTree::rebalance(UNode*& node) {
             rotateLeft(leftNode);
             rotateRight(node);
             return;
-        }
-
-        if(leftOfLeftNodeHeight > rightOfRightNodeHeight){
+        }else{
             // cout << "Left subtree is left heavy" << endl;
         // Left subtree is left heavy
             // Single right rotation
@@ -795,7 +823,7 @@ void UTree::rotateLeft(UNode*& rootNode){
         a   b   
 
     */
-
+    // cout << "should be rotating left here" << endl;
     UNode* pivot = rootNode->_right;
 
     UNode* A = rootNode->_left;
@@ -804,9 +832,10 @@ void UTree::rotateLeft(UNode*& rootNode){
 
 
     // Swap pivot with root
-    DTree* swapTree = rootNode->getDTree();
-    rootNode->getDTree() = pivot->getDTree();
-    pivot->getDTree() = swapTree;
+    DTree swapTree = DTree();
+    swapTree = *(rootNode->getDTree());
+    *(rootNode->getDTree()) = *(pivot->getDTree());
+    *(pivot->getDTree()) = swapTree;
 
     // Update subtree connections
     rootNode->_left = pivot;
@@ -851,9 +880,10 @@ void UTree::rotateRight(UNode*& rootNode){
 
 
     // Swap pivot with root
-    DTree* swapTree = rootNode->getDTree();
-    rootNode->getDTree() = pivot->getDTree();
-    pivot->getDTree() = swapTree;
+    DTree swapTree = DTree();
+    swapTree = *(rootNode->getDTree());
+    *(rootNode->getDTree()) = *(pivot->getDTree());
+    *(pivot->getDTree()) = swapTree;
 
     // Update subtree connections
     rootNode->_right = pivot;

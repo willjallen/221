@@ -116,10 +116,10 @@ bool UTree::recursiveInsert(UNode* node, Account newAcct){
             // Add new account
             newUNode->getDTree()->insert(newAcct);
             updateAndRebalanceAlongPath(newAcct.getUsername());
-            cout << "dump: " << endl;
-            cout << newAcct.getUsername() << endl;
-            dump();
-            cout << endl;
+            // cout << "dump: " << endl;
+            // cout << newAcct.getUsername() << endl;
+            // dump();
+            // cout << endl;
             return true;
         }
     }
@@ -133,18 +133,18 @@ bool UTree::recursiveInsert(UNode* node, Account newAcct){
             node->_right = newUNode;
             // Add new account
             newUNode->getDTree()->insert(newAcct);
-            cout << newAcct.getUsername() << endl;
+            // cout << newAcct.getUsername() << endl;
             
-            cout << "Before insertion & rebalance: " << endl;
-            dump();
-            cout << endl;
+            // cout << "Before insertion & rebalance: " << endl;
+            // dump();
+            // cout << endl;
             
             updateAndRebalanceAlongPath(newAcct.getUsername());
             
-            cout << "After insertion & rebalance: " << endl;
-            dump();
-            cout << endl;
-            cout << endl;
+            // cout << "After insertion & rebalance: " << endl;
+            // dump();
+            // cout << endl;
+            // cout << endl;
             return true;
         }
     }
@@ -551,20 +551,20 @@ void UTree::rebalance(UNode*& node) {
     int leftOfRightNodeHeight = (leftOfRightNode == nullptr ? -1 : leftOfRightNode->_height);
 
 
-    cout << endl;
-    cout << "=====================" << endl;
-    cout << "Rebalance: " << node->getUsername() << endl;
-    cout << "Left | Right : " << leftNodeHeight << " | " << rightNodeHeight << endl; 
-    cout << endl;
+    // cout << endl;
+    // cout << "=====================" << endl;
+    // cout << "Rebalance: " << node->getUsername() << endl;
+    // cout << "Left | Right : " << leftNodeHeight << " | " << rightNodeHeight << endl; 
+    // cout << endl;
 
     // Tree is right heavy
     if(rightNodeHeight > leftNodeHeight + 1){
-        cout << "Tree is right heavy" << endl;
-        cout << "Right subtree:" << endl;
-        cout << "Left | Right : " << leftOfRightNodeHeight << " | " << rightOfRightNodeHeight << endl; 
+        // cout << "Tree is right heavy" << endl;
+        // cout << "Right subtree:" << endl;
+        // cout << "Left | Right : " << leftOfRightNodeHeight << " | " << rightOfRightNodeHeight << endl; 
         // Right subtree is left heavy
         if(leftOfRightNodeHeight > rightOfRightNodeHeight){
-            cout << "Right subtree is left heavy" << endl;
+            // cout << "Right subtree is left heavy" << endl;
             // Double left rotation
             // Left then right
             // cout << "000" << endl;
@@ -574,7 +574,7 @@ void UTree::rebalance(UNode*& node) {
         }
 
         if(rightOfRightNodeHeight > leftOfRightNodeHeight){
-            cout << "Right subtree is right heavy" << endl;
+            // cout << "Right subtree is right heavy" << endl;
         // Right subtree is right heavy
             // Single left rotation
             rotateLeft(node);
@@ -586,11 +586,11 @@ void UTree::rebalance(UNode*& node) {
 
     // Tree is left heavy
     if(leftNodeHeight > rightNodeHeight + 1){
-        cout << "Tree is right heavy" << endl;
+        // cout << "Tree is right heavy" << endl;
 
         // Left subtree is right heavy
         if(rightOfLeftNodeHeight > leftOfLeftNodeHeight){
-            cout << "Left subtree is right heavy" << endl;
+            // cout << "Left subtree is right heavy" << endl;
             // Double right rotation
             // Right then left
             // cout << "111" << endl;
@@ -600,7 +600,7 @@ void UTree::rebalance(UNode*& node) {
         }
 
         if(leftOfLeftNodeHeight > rightOfRightNodeHeight){
-            cout << "Left subtree is left heavy" << endl;
+            // cout << "Left subtree is left heavy" << endl;
         // Left subtree is left heavy
             // Single right rotation
             // cout << "hereZ" << endl;
@@ -608,8 +608,8 @@ void UTree::rebalance(UNode*& node) {
             return;
         }
     }
-    cout << "=====================" << endl;
-    cout << endl;
+    // cout << "=====================" << endl;
+    // cout << endl;
 
     // // If tree is left heavy
     // if(node->_left != nullptr){
@@ -726,7 +726,7 @@ void UTree::rotateRight(UNode*& rootNode){
 
     UNode* pivot = rootNode->_left;
 
-    cout << "pivot: " << pivot << endl;
+    // cout << "pivot: " << pivot << endl;
 
     UNode* A = rootNode->_right;
     UNode* B = pivot->_right;

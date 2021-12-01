@@ -9,14 +9,14 @@ using std::domain_error;
 RQueue::RQueue(prifn_t priFn)
 {
   this->priority = priFn;
-  this->size = 0;
+  this->_size = 0;
 
 }
 
 RQueue::~RQueue()
 {
   clear();
-  this->size = 0;
+  this->_size = 0;
 
 }
 
@@ -35,7 +35,7 @@ RQueue& RQueue::operator=(const RQueue& rhs) {
 }
 
 
-void DTree::copyTree(Node*& dest, Node* src) {
+void RQueue::copyTree(Node*& dest, Node* src) {
     if(src == nullptr) return;
     dest = new Node(*src);
     copyTree(dest->_left, src->_left);
@@ -53,6 +53,7 @@ Student RQueue::getNextStudent() {
   /************************
    * To be implemented
    * *********************/
+  return Student();
 }
 
 
@@ -66,7 +67,7 @@ void RQueue::clear() {
  clear(_heap);
 }
 
-void RQueue::clear(DNode* node) {
+void RQueue::clear(Node* node) {
     if(node == nullptr) return;
     clear(node->_left);
     clear(node->_right);
@@ -75,9 +76,7 @@ void RQueue::clear(DNode* node) {
 
 int RQueue::numStudents() const
 {
-  /************************
-   * To be implemented
-   * *********************/
+  return this->_size;
 }
 
 void RQueue::printStudentQueue() const {
@@ -87,7 +86,7 @@ void RQueue::printStudentQueue() const {
   print(_heap); // ???
 }
 
-void RQueue::print(Node *pos){
+void RQueue::print(Node* pos) const {
     if ( pos != nullptr ) {
     cout << priority(pos->_student) << ":" << pos->_student.getName();
     dump(pos->_left);

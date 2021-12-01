@@ -158,5 +158,9 @@ private:
    * Private function declarations go here! *
    ******************************************/
 
+  void copyTree(Node*& dest, Node* src);
+  void clear(Node* node);
+  void print(Node* pos) const;
+
 };
 #endif

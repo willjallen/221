@@ -15,9 +15,9 @@ int main() {
 
   // Create some test students and insert them into the queue
   //Student(string name, int priority, int year, int major, int group)
+  Student student3("Nick",2,0,0,0);
   Student student1("Sam",1,1,1,1);
   Student student2("Liz",5,1,2,0);
-  Student student3("Nick",2,0,0,0);
   Student student4("Eva",4,3,2,1);
 
   queue1.insertStudent(student3);

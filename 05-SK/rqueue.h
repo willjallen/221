@@ -161,6 +161,8 @@ private:
   void copyTree(Node*& dest, Node* src);
   void clear(Node* node);
   void print(Node* pos) const;
+  Node* mergeWithQueue(Node* heapOne, Node* heapTwo);
+  void swap(Node*& nodeOne, Node*& nodeTwo);
 
 };
 #endif

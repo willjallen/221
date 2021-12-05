@@ -8,6 +8,146 @@ using namespace std;
 int priorityFn1(const Student &tudent);
 int priorityFn2(const Student &student);
 
+
+
+class Tester {
+public:
+  bool RQueueTestCopyConstructor();
+  bool RQueueTestAssingmentOperator();
+  bool RQueueTestInsertDifferentPriorityFn();
+  bool RQueueTestGetNextStudentEmptyQueue();
+
+};
+
+
+
+bool Tester::RQueueTestCopyConstructor(){
+  RQueue queue1(priorityFn1);
+  Student student3("Nick",2,0,0,0);
+  Student student1("Sam",1,1,1,1);
+  Student student2("Liz",5,1,2,0);
+  Student student4("Eva",4,3,2,1);
+
+  queue1.insertStudent(student3);
+  queue1.insertStudent(student1);
+  queue1.insertStudent(student2);
+  queue1.insertStudent(student4);
+
+  queue1.dump();
+  cout << endl;
+
+  RQueue queue2(queue1);
+
+  cout << "lhs queue" << endl;
+  queue1.dump();
+  cout << endl;
+
+  cout << "rhs queue" << endl;
+  queue2.dump();
+  cout << endl;
+
+  if(&queue1 == &queue2) return false;
+  if(queue1._heap == queue2._heap) return false;
+  if(queue1.priority != queue2.priority) return false;
+  if(queue1._size != queue2._size) return false;
+
+
+  return true;
+
+} 
+
+bool Tester::RQueueTestAssingmentOperator(){
+  RQueue queue1(priorityFn1);
+  RQueue queue2(priorityFn1);
+
+  // Create some test students and insert them into the queue
+  //Student(string name, int priority, int year, int major, int group)
+  Student student3("Nick",2,0,0,0);
+  Student student1("Sam",1,1,1,1);
+  Student student2("Liz",5,1,2,0);
+  Student student4("Eva",4,3,2,1);
+
+  queue1.insertStudent(student3);
+  queue1.insertStudent(student1);
+  queue1.insertStudent(student2);
+  queue1.insertStudent(student4);
+
+  Student student5("John",6,3,2,1);
+  Student student6("Mia",3,0,0,0);
+
+  queue2.insertStudent(student5);
+  queue2.insertStudent(student6);
+
+
+  queue1 = queue2;
+
+  cout << "lhs queue" << endl;
+  queue1.dump();
+  cout << endl;
+
+  cout << "rhs queue" << endl;
+  queue2.dump();
+  cout << endl;
+
+  if(&queue1 == &queue2) return false;
+  if(queue1._heap == queue2._heap) return false;
+  if(queue1.priority != queue2.priority) return false;
+  if(queue1._size != queue2._size) return false;
+
+  return true;
+
+}
+
+bool Tester::RQueueTestInsertDifferentPriorityFn(){
+  RQueue queue1(priorityFn1);
+  RQueue queue2(priorityFn2);
+
+  // Create some test students and insert them into the queue
+  //Student(string name, int priority, int year, int major, int group)
+  Student student3("Nick",2,0,0,0);
+  Student student1("Sam",1,1,1,1);
+  Student student2("Liz",5,1,2,0);
+  Student student4("Eva",4,3,2,1);
+
+  queue1.insertStudent(student3);
+  queue1.insertStudent(student1);
+  queue1.insertStudent(student2);
+  queue1.insertStudent(student4);
+
+  Student student5("John",6,3,2,1);
+  Student student6("Mia",3,0,0,0);
+
+  queue2.insertStudent(student5);
+  queue2.insertStudent(student6);
+
+  try{
+    queue1.mergeWithQueue(queue2);
+  }catch(std::domain_error& e){
+    return true;
+  }
+
+  return false;
+
+
+}
+
+bool Tester::RQueueTestGetNextStudentEmptyQueue(){
+  RQueue queue1(priorityFn1);
+  Student student1("Sam",1,1,1,1);
+  queue1.insertStudent(student1);
+
+  queue1.getNextStudent();
+
+  try{
+    queue1.getNextStudent();
+  }catch(std::domain_error& e){
+    return true;
+  }
+
+  return false;
+}
+
+
 int main() {
 
   RQueue queue1(priorityFn1);
@@ -69,6 +209,45 @@ int main() {
     Student student = queue1.getNextStudent();
     std::cout << "[" << priorityFn1(student) << "] " << student << std::endl;
   }
+
+
+  Tester tester;
+
+  std::cout << "\nTesting copy constructor..." << std::endl;
+  if(tester.RQueueTestCopyConstructor()){
+    std::cout << "test passed" << endl;
+  }else{
+    std::cout << "test failed" << endl;
+  }
+
+
+  std::cout << "\nTesting assignment operator..." << std::endl;
+  if(tester.RQueueTestAssingmentOperator()){
+    std::cout << "test passed" << endl;
+  }else{
+    std::cout << "test failed" << endl;
+  }
+
+
+  std::cout << "\nTesting insert w/ different priority function..." << std::endl;
+  if(tester.RQueueTestInsertDifferentPriorityFn()){
+    std::cout << "test passed" << endl;
+  }else{
+    std::cout << "test failed" << endl;
+  }
+
+
+
+  std::cout << "\nTesting remove from empty queue..." << std::endl;
+  if(tester.RQueueTestGetNextStudentEmptyQueue()){
+    std::cout << "test passed" << endl;
+  }else{
+    std::cout << "test failed" << endl;
+  }
+
+
+
+
 
   return 0;
 }

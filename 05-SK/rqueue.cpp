@@ -21,7 +21,11 @@ RQueue::~RQueue()
 
 RQueue::RQueue(const RQueue& rhs)
 {  
-  *this = rhs; //???
+  if(this != &rhs) {
+        this->_size = rhs._size;
+        this->priority = rhs.priority;
+        copyTree(_heap, rhs._heap);
+    }
 }
 
 
@@ -29,6 +33,8 @@ RQueue& RQueue::operator=(const RQueue& rhs) {
     if(this != &rhs) {
         clear();
         copyTree(_heap, rhs._heap);
+        this->_size = rhs._size;
+        this->priority = rhs.priority;
     }
     return *this;
 }
@@ -36,7 +42,7 @@ RQueue& RQueue::operator=(const RQueue& rhs) {
 
 void RQueue::copyTree(Node*& dest, Node* src) {
     if(src == nullptr) return;
-    dest = new Node(*src);
+    dest = new Node(src->getStudent());
     copyTree(dest->_left, src->_left);
     copyTree(dest->_right, src->_right);
 }
@@ -65,7 +71,7 @@ void RQueue::insertStudent(const Student& input) {
 
   // cout << endl;
   // cout << "dump:" << endl;
-  dump();
+  // dump();
   // cout << endl;
 
 
@@ -94,8 +100,8 @@ Student RQueue::getNextStudent() {
   Node* rightNode = rtnNode->_right;
 
 
-  dump();
-  cout << endl;
+  // dump();
+  // cout << endl;
   // If this is the last item in the queue
   if(_size == 1){
     delete _heap;
@@ -108,7 +114,7 @@ Student RQueue::getNextStudent() {
   }
 
 
-  cout << this->_heap << endl;
+  // cout << this->_heap << endl;
   return rtnStudent;
 }
 
@@ -118,13 +124,13 @@ void RQueue::mergeWithQueue(RQueue& rhs) {
    * To be implemented
    * *********************/
 
-  cout << "Merging:" << endl;
-  if(this->_heap == nullptr){
-    cout << "this->_heap (lhs): nullptr" << endl;
-  }else{
-    cout << "this->_heap (lhs): " << _heap->getStudent() << endl;
-  }
-  cout << "(rhs) " << rhs._heap->getStudent() << endl;
+  // cout << "Merging:" << endl;
+  // if(this->_heap == nullptr){
+  //   cout << "this->_heap (lhs): nullptr" << endl;
+  // }else{
+  //   cout << "this->_heap (lhs): " << _heap->getStudent() << endl;
+  // }
+  // cout << "(rhs) " << rhs._heap->getStudent() << endl;
 
   /*
   Two skew heaps can only be merged if they have the same priority 
@@ -143,8 +149,8 @@ void RQueue::mergeWithQueue(RQueue& rhs) {
     throw domain_error("Self-merge"); //???
   }
 
-  cout << this->_size << endl;
-  cout << rhs._size << endl;
+  // cout << this->_size << endl;
+  // cout << rhs._size << endl;
   this->_size += rhs._size;
 
 
@@ -156,24 +162,24 @@ void RQueue::mergeWithQueue(RQueue& rhs) {
   // Set rhs to be empty
   rhs._heap = nullptr;
 
-  cout << endl;
+  // cout << endl;
 
 }
 
 Node* RQueue::mergeWithQueue(Node* heapOneRoot, Node* heapTwoRoot) {
 
-  cout << "==========" << endl;
-  cout << "Merging" << endl;
-  if(heapOneRoot != nullptr){
-    cout << "heapOneRoot: " << heapOneRoot->getStudent() << endl;
-  }else{
-    cout << "heapOneRoot: nullptr" << endl;
-  }
-  if(heapTwoRoot != nullptr){
-    cout << "heapTwoRoot: " << heapTwoRoot->getStudent() << endl;
-  }else{
-    cout << "heapTwoRoot: nullptr" << endl;
-  }
+  // cout << "==========" << endl;
+  // cout << "Merging" << endl;
+  // if(heapOneRoot != nullptr){
+  //   cout << "heapOneRoot: " << heapOneRoot->getStudent() << endl;
+  // }else{
+  //   cout << "heapOneRoot: nullptr" << endl;
+  // }
+  // if(heapTwoRoot != nullptr){
+  //   cout << "heapTwoRoot: " << heapTwoRoot->getStudent() << endl;
+  // }else{
+  //   cout << "heapTwoRoot: nullptr" << endl;
+  // }
   
 
   // If p1 is Null, return p2; similarly, if p2 is Null, return p1. 
@@ -190,11 +196,11 @@ Node* RQueue::mergeWithQueue(Node* heapOneRoot, Node* heapTwoRoot) {
   // Because it makes sense, okay
 
   if(priority(heapOneRoot->getStudent()) > priority(heapTwoRoot->getStudent())){
-    cout << "Swapping" << endl;
+    // cout << "Swapping" << endl;
     swap(heapOneRoot, heapTwoRoot);
-    cout << "After swap:" << endl;
-    cout << "heapOneRoot: " << heapOneRoot->getStudent() << endl;
-    cout << "heapTwoRoot: " << heapTwoRoot->getStudent() << endl;
+    // cout << "After swap:" << endl;
+    // cout << "heapOneRoot: " << heapOneRoot->getStudent() << endl;
+    // cout << "heapTwoRoot: " << heapTwoRoot->getStudent() << endl;
 
   }
 
@@ -223,12 +229,12 @@ Node* RQueue::mergeWithQueue(Node* heapOneRoot, Node* heapTwoRoot) {
   // Recursively merge p2 and the left subtree of p1, replacing the left subtree of p1 with the result of the recursive merge.
   heapOneRoot->_left = mergeWithQueue(heapTwoRoot, heapOneRoot->_left);
 
-  cout << "==========" << endl;
-  cout << endl << endl;
-  cout << "returning: " << endl;
-  cout << "heapOneRoot: " << heapOneRoot->getStudent() << endl;
-  cout << heapOneRoot->_left << endl;
-  cout << heapOneRoot->_right << endl;
+  // cout << "==========" << endl;
+  // cout << endl << endl;
+  // cout << "returning: " << endl;
+  // cout << "heapOneRoot: " << heapOneRoot->getStudent() << endl;
+  // cout << heapOneRoot->_left << endl;
+  // cout << heapOneRoot->_right << endl;
 
   return heapOneRoot;
 
@@ -267,13 +273,11 @@ void RQueue::rebuildHeap(){
   fillArray(tempArray, index, _heap);
   clear();
 
-  cout << "filled?" << endl;
   // Insert all elements again with new priority function
   for(int i = 0; i < size; i++){
-    cout << "i: " << i << endl;
-    cout << tempArray[i] << endl;
+    // cout << "i: " << i << endl;
+    // cout << tempArray[i] << endl;
     insertStudent(tempArray[i]);
-    cout << "done?" << endl;
   }
 
   delete[] tempArray;
@@ -286,22 +290,20 @@ void RQueue::fillArray(Student*& arr, int& indx, Node* node){
   if(node == nullptr) return;
 
   fillArray(arr, indx, node->_left);
+  fillArray(arr, indx, node->_right);
   arr[indx] = node->getStudent();
   indx++;
-  fillArray(arr, indx, node->_right);
 }
 
 
 void RQueue::clear() {
-  if(_heap != nullptr){
-    cout << _heap->getStudent() << endl;
-  }
- clear(_heap);
- _heap = nullptr;
- _size = 0;
+   clear(_heap);
+   _heap = nullptr;
+   _size = 0;
 }
 
 void RQueue::clear(Node* node) {
+    // cout << node << endl;
     if(node == nullptr) return;
     clear(node->_left);
     clear(node->_right);
@@ -314,16 +316,12 @@ int RQueue::numStudents() const
 }
 
 void RQueue::printStudentQueue() const {
-  /************************
-   * To be implemented
-   * *********************/
-  printStudentQueue(_heap); // ???
+  printStudentQueue(_heap); 
 }
 
 // Preorder traversal
 void RQueue::printStudentQueue(Node* node) const {
   if(node == nullptr) return;
-// [0] Student: Nick, priority: 2, year: 0, major: CS, group: Minority
   cout << "[" << priority(node->getStudent()) << "] " << node->getStudent() << endl;
   printStudentQueue(node->_left);
   printStudentQueue(node->_right);
@@ -335,9 +333,6 @@ prifn_t RQueue::getPriorityFn() const {
 }
 
 void RQueue::setPriorityFn(prifn_t priFn) {
-  /************************
-   * To be implemented
-   * *********************/
   this->priority = priFn;
   rebuildHeap();
 }

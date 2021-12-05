@@ -20,6 +20,6 @@ run:
 		./$(EXECUTABLE)
 
 clean:
-		rm driver.o
+		rm mytest.o
 		rm rqueue.o
 		rm *.out

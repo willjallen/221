@@ -17,6 +17,8 @@ public:
   bool RQueueTestInsertDifferentPriorityFn();
   bool RQueueTestGetNextStudentEmptyQueue();
 
+  bool RQueueGeneralTest();
+
 };
 
 
@@ -32,9 +34,6 @@ bool Tester::RQueueTestCopyConstructor(){
   queue1.insertStudent(student1);
   queue1.insertStudent(student2);
   queue1.insertStudent(student4);
-
-  queue1.dump();
-  cout << endl;
 
   RQueue queue2(queue1);
 
@@ -147,6 +146,18 @@ bool Tester::RQueueTestGetNextStudentEmptyQueue(){
   return false;
 }
 
+bool Tester::RQueueGeneralTest(){
+  RQueue queue1(priorityFn1);
+
+  Student student;
+  for(int i = 0; i < 5000; i++){
+    student = Student("a", rand() % 6, rand() % 4, rand() % 3, rand() % 2);
+    queue1.insertStudent(student);
+  }
+
+  return true;
+}
+
 
 int main() {
 
@@ -246,7 +257,7 @@ int main() {
   }
 
 
-
+  tester.RQueueGeneralTest();
 
 
   return 0;

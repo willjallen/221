@@ -17,9 +17,6 @@ RQueue::RQueue(prifn_t priFn)
 RQueue::~RQueue()
 {
   clear();
-  this->_size = 0;
-  this->_heap = nullptr;
-
 }
 
 RQueue::RQueue(const RQueue& rhs)
@@ -95,24 +92,23 @@ Student RQueue::getNextStudent() {
   // Get the left and right members of the node to merge
   Node* leftNode = rtnNode->_left;
   Node* rightNode = rtnNode->_right;
-  
-  delete rtnNode;
-  this->_size--;
-
-  RQueue dummyInsert = RQueue(this->getPriorityFn());
-  dummyInsert._heap = rightNode; 
 
 
-
+  dump();
+  cout << endl;
   // If this is the last item in the queue
-  if(leftNode == nullptr && rightNode == nullptr){
+  if(_size == 1){
+    delete _heap;
     this->_heap = nullptr;
+    _size = 0;
   }else{
-    this->_heap = leftNode;
-    mergeWithQueue(dummyInsert);
+    this->_heap = mergeWithQueue(leftNode, rightNode);
+    _size--;
+    delete rtnNode;
   }
 
 
+  cout << this->_heap << endl;
   return rtnStudent;
 }
 
@@ -147,10 +143,18 @@ void RQueue::mergeWithQueue(RQueue& rhs) {
     throw domain_error("Self-merge"); //???
   }
 
+  cout << this->_size << endl;
+  cout << rhs._size << endl;
+  this->_size += rhs._size;
+
+
   this->_heap = mergeWithQueue(this->_heap, rhs._heap);
   // cout << this->_heap->getStudent() << endl;
   // cout << this->_heap->_left->getStudent() << endl;
   // cout << this->_heap->_right << endl;
+
+  // Set rhs to be empty
+  rhs._heap = nullptr;
 
   cout << endl;
 
@@ -255,8 +259,46 @@ void RQueue::swap(Node*& nodeOne, Node*& nodeTwo){
 
 }
 
+void RQueue::rebuildHeap(){
+
+  int size = _size;
+  Student* tempArray = new Student[size];
+  int index = 0;
+  fillArray(tempArray, index, _heap);
+  clear();
+
+  cout << "filled?" << endl;
+  // Insert all elements again with new priority function
+  for(int i = 0; i < size; i++){
+    cout << "i: " << i << endl;
+    cout << tempArray[i] << endl;
+    insertStudent(tempArray[i]);
+    cout << "done?" << endl;
+  }
+
+  delete[] tempArray;
+
+}
+
+
+void RQueue::fillArray(Student*& arr, int& indx, Node* node){
+  // Preorder
+  if(node == nullptr) return;
+
+  fillArray(arr, indx, node->_left);
+  arr[indx] = node->getStudent();
+  indx++;
+  fillArray(arr, indx, node->_right);
+}
+
+
 void RQueue::clear() {
+  if(_heap != nullptr){
+    cout << _heap->getStudent() << endl;
+  }
  clear(_heap);
+ _heap = nullptr;
+ _size = 0;
 }
 
 void RQueue::clear(Node* node) {
@@ -275,17 +317,18 @@ void RQueue::printStudentQueue() const {
   /************************
    * To be implemented
    * *********************/
-  print(_heap); // ???
+  printStudentQueue(_heap); // ???
 }
 
-void RQueue::print(Node* pos) const {
-    if ( pos != nullptr ) {
-    cout << priority(pos->_student) << ":" << pos->_student.getName();
-    dump(pos->_left);
-    dump(pos->_right);
-  }
-
+// Preorder traversal
+void RQueue::printStudentQueue(Node* node) const {
+  if(node == nullptr) return;
+// [0] Student: Nick, priority: 2, year: 0, major: CS, group: Minority
+  cout << "[" << priority(node->getStudent()) << "] " << node->getStudent() << endl;
+  printStudentQueue(node->_left);
+  printStudentQueue(node->_right);
 }
+
 
 prifn_t RQueue::getPriorityFn() const {
   return this->priority;
@@ -296,6 +339,7 @@ void RQueue::setPriorityFn(prifn_t priFn) {
    * To be implemented
    * *********************/
   this->priority = priFn;
+  rebuildHeap();
 }
 
 

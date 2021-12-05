@@ -160,9 +160,14 @@ private:
 
   void copyTree(Node*& dest, Node* src);
   void clear(Node* node);
-  void print(Node* pos) const;
+  
+  void printStudentQueue(Node* node) const;
+
+
   Node* mergeWithQueue(Node* heapOne, Node* heapTwo);
   void swap(Node*& nodeOne, Node*& nodeTwo);
+  void rebuildHeap();
+  void fillArray(Student*& arr, int& indx, Node* node);
 
 };
 #endif

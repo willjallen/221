@@ -4,11 +4,11 @@ else
 		EXECUTABLE=driver.out
 endif
 
-all: driver.o rqueue.o
-	g++ -Wall -Werror -std=c++11 driver.o rqueue.o -o $(EXECUTABLE) 
+all: mytest.o rqueue.o
+	g++ -Wall -Werror -std=c++11 mytest.o rqueue.o -o $(EXECUTABLE) 
 
-driver.o: driver.cpp
-	g++ -g -Wall -Werror -std=c++11 -c driver.cpp
+mytest.o: mytest.cpp
+	g++ -g -Wall -Werror -std=c++11 -c mytest.cpp
 
 rqueue.o: rqueue.cpp rqueue.h
 	g++ -g -Wall -Werror -std=c++11 -c rqueue.cpp
